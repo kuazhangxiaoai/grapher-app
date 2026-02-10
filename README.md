@@ -1,2 +1,2 @@
 # grapher-app
-This is backend code for grapher
+This is backend code for graph
