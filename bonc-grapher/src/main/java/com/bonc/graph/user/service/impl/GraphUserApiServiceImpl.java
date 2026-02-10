@@ -13,10 +13,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * ppt用户信息Service业务层处理
+ * graph用户信息Service业务层处理
  *
- * @author ruoyi
- * @date 2025-04-10
+ * @author wanghao
+ * @date 2026-02-10
  */
 @Service
 public class GraphUserApiServiceImpl implements IGraphUserApiService {

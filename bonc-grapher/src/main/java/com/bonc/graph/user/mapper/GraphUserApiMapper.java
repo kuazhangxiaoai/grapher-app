@@ -6,8 +6,8 @@ import org.apache.ibatis.annotations.Param;
 /**
  * 登录
  * 
- * @author ruoyi
- * @date 2025-04-10
+ * @author wanghao
+ * @date 2026-02-10
  */
 public interface GraphUserApiMapper
 {

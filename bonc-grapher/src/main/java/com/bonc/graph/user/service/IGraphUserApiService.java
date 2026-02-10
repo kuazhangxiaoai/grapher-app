@@ -4,10 +4,10 @@ import com.bonc.common.core.domain.model.GraphUser;
 import org.apache.ibatis.annotations.Param;
 
 /**
- * ppt用户信息Service接口
+ * graph用户信息Service接口
  * 
- * @author ruoyi
- * @date 2025-04-10
+ * @author wanghao
+ * @date 2026-02-10
  */
 public interface IGraphUserApiService
 {
