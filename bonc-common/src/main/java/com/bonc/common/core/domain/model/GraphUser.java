@@ -11,7 +11,7 @@ import com.bonc.common.core.domain.BaseEntity;
  * @author ruoyi
  * @date 2025-04-10
  */
-public class PptUser extends BaseEntity
+public class GraphUser extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 

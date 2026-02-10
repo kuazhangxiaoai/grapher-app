@@ -1,6 +1,5 @@
 package com.bonc.common.core.domain.model;
 
-import com.bonc.common.core.domain.model.PptUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -10,7 +9,7 @@ public class PPTLoginUser implements UserDetails {
 
     private static final long serialVersionUID = 1L;
 
-    private PptUser user;
+    private GraphUser user;
 
     private Collection<? extends GrantedAuthority> authorities;
 
@@ -50,12 +49,12 @@ public class PPTLoginUser implements UserDetails {
         this.token = token;
     }
 
-    public PPTLoginUser(PptUser user, Collection<? extends GrantedAuthority> authorities) {
+    public PPTLoginUser(GraphUser user, Collection<? extends GrantedAuthority> authorities) {
         this.user = user;
         this.authorities = authorities;
     }
 
-    public PptUser getUser() {
+    public GraphUser getUser() {
         return user;
     }
 
