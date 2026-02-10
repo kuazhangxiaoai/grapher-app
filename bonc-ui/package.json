@@ -1,7 +1,7 @@
 {
   "name": "ruoyi",
   "version": "3.8.9",
-  "description": "三维演示管理系统",
+  "description": "知识图谱管理系统",
   "author": "BONC",
   "license": "MIT",
   "scripts": {

@@ -6,9 +6,8 @@ ruoyi:
   version: 3.8.9
   # 版权年份
   copyrightYear: 2025
-  # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
-#  profile: D:/ruoyi/uploadPath
-  profile: E:\Users\dengXiangfei\ruoyi\uploadPath
+  # 文件路径 示例（ Windows配置D:/bonc/uploadPath，Linux配置 /home/bonc/uploadPath）
+  profile: D:/bonc/uploadPath
   # 获取ip地址开关
   addressEnabled: false
   # 验证码类型 math 数字计算 char 字符验证
@@ -130,11 +129,5 @@ xss:
   # 匹配链接
   urlPatterns: /system/*,/monitor/*,/tool/*
 
-# 静态资源-配置独立或服务所在的IP
-staticUrl: http://127.0.0.1:80
-
 #md5盐值
 md5salt: bonc123
-
-#go语言打包ppt项目url
-buildExeUrl: http://10.11.52.173:9004/build
