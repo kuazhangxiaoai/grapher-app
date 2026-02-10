@@ -6,9 +6,12 @@ spring:
         druid:
             # 主库数据源
             master:
-                url: jdbc:postgresql://localhost:5432/graph_db?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+                url: jdbc:postgresql://10.11.52.199:5432/grapher_db?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
                 username: postgres
-                password: 123456
+                password: ZGCATT
+#                url: jdbc:postgresql://localhost:5432/grapher_db?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+#                username: postgres
+#                password: 123456
             # 从库数据源
             slave:
                 # 从数据源开关/默认关闭
