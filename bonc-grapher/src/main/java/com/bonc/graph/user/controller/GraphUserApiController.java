@@ -40,6 +40,8 @@ public class GraphUserApiController extends BaseController
     public Result login(@RequestParam("userName")String userName, @RequestParam("password")String passWord,
                         HttpServletRequest request)
     {
+        log.info("开始调用登录接口:/graph_api/v1/user/login");
+        log.info("userName:" + userName + ",passWord:" + passWord);
         Result result = new Result();
         GraphUser graphUser = graphUserApiService.login(userName, passWord);
         if (userName.isEmpty() || passWord.isEmpty() || graphUser == null){
@@ -64,6 +66,8 @@ public class GraphUserApiController extends BaseController
     @PostMapping("/register")
     public Result register(@RequestBody GraphUser graphUser)
     {
+        log.info("开始调用注册接口:/graph_api/v1/user/register");
+        log.info("graphUser:"+ graphUser.toString());
         Result result = new Result();
         try {
             graphUserApiService.register(graphUser);
@@ -81,6 +85,7 @@ public class GraphUserApiController extends BaseController
     @PostMapping("/logout")
     public Result logout(HttpSession session)
     {
+        log.info("开始调用登出接口:/graph_api/v1/user/logout");
         Result result = new Result();
         session.invalidate();
         result.successResult("用户已登出");

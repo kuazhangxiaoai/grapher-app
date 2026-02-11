@@ -1,6 +1,7 @@
 package com.bonc.graph.user.mapper;
 
 import com.bonc.common.core.domain.model.GraphUser;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
@@ -10,6 +11,7 @@ import java.util.List;
  * @author wanghao
  * @date 2026-02-10
  */
+@Mapper
 public interface GraphUserMapper
 {
     /**

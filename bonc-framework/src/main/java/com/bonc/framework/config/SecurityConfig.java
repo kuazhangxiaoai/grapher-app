@@ -122,7 +122,7 @@ public class SecurityConfig implements WebMvcConfigurer
                 // 对于登录login 注册register 验证码captchaImage 允许匿名访问
                 requests.antMatchers("/login", "/register", "/captchaImage").permitAll()
                     // 对于PPT前台网站的允许访问;
-                    .antMatchers("/ppt_api/v1/**","/ppt_api/v1/user/login","/ppt_api/v1/user/logout", "/ppt_api/v1/user/register" ).permitAll()
+                    .antMatchers("/graph_api/v1/**","/graph_api/v1/user/login","/graph_api/v1/user/logout", "/graph_api/v1/user/register" ).permitAll()
                     // 静态资源，可匿名访问
                     .antMatchers(HttpMethod.GET, "/", "/*.html", "/**/*.html", "/**/*.css", "/**/*.js", "/profile/**").permitAll()
                     .antMatchers("/swagger-ui.html", "/swagger-resources/**", "/webjars/**", "/*/api-docs", "/druid/**").permitAll()
