@@ -24,8 +24,7 @@ public interface GraphFieldMapper {
 
     /**
      * 删除领域
-     * @param fieldId 领域ID
      * @return
      */
-    int deleteByFieldId(String fieldId);
+    int deleteByFieldId(Field field);
 }

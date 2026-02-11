@@ -3,6 +3,7 @@ package com.bonc.graph.project.controller;
 import com.bonc.common.core.domain.model.GraphUser;
 import com.bonc.common.core.domain.model.LoginUser;
 import com.bonc.common.core.domain.model.PPTLoginUser;
+import com.bonc.common.utils.DateUtils;
 import com.bonc.graph.project.domain.Field;
 import com.bonc.graph.project.service.GraphFieldService;
 import com.bonc.graph.user.domain.Result;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
  * 领域
  */
 @RestController
-@RequestMapping("/graph/field")
+@RequestMapping("/graph_api/v1/field")
 public class GraphFieldController {
 
     @Autowired
@@ -30,9 +31,9 @@ public class GraphFieldController {
     public Result addField(@RequestBody Field field,  @AuthenticationPrincipal PPTLoginUser loginUser){
         Result result = new Result();
         try {
-//            GraphUser user = loginUser.getUser();
-//            String userName = user.getUserName();
-//            field.setCreateBy(userName);
+            GraphUser user = loginUser.getUser();
+            String userName = user.getUserName();
+            field.setCreateBy(userName);
             result.successResult(graphFieldService.addField(field));
         }catch (Exception e){
             result.failResult(e.getMessage());
@@ -65,11 +66,16 @@ public class GraphFieldController {
      * @return
      */
     @GetMapping("/remove")
-    public Result remove(@RequestParam("fieldId") String fieldId)
+    public Result remove(@RequestParam("fieldId") String fieldId,@AuthenticationPrincipal PPTLoginUser loginUser)
     {
         Result result = new Result();
         try {
-            result.successResult(graphFieldService.deleteByFieldId(fieldId));
+            Field field = new Field();
+            GraphUser user = loginUser.getUser();
+            String userName = user.getUserName();
+            field.setUpdateBy(userName);
+            field.setFieldId(fieldId);
+            result.successResult(graphFieldService.deleteByFieldId(field));
         }catch (Exception e){
             result.failResult(e.getMessage());
             e.printStackTrace();

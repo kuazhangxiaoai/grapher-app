@@ -33,7 +33,9 @@ public class GraphFieldServiceImpl implements GraphFieldService {
     }
     /* 删除领域 */
     @Override
-    public int deleteByFieldId(String fieldId) {
-        return graphFieldMapper.deleteByFieldId(fieldId);
+    public int deleteByFieldId(Field field) {
+        field.setUpdateTime(DateUtils.getNowDate());
+        field.setDelFlag("2");
+        return graphFieldMapper.deleteByFieldId(field);
     }
 }
