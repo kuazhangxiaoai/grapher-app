@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bonc.graph.project.mapper.GraphFieldMapper">
+    <resultMap id="FieldMap" type="Field" >
+        <result property="fieldId"    column="field_id"    />
+        <result property="fieldName"    column="field_name"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <insert id="addField" parameterType="Field">
+        insert into graph_field
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="fieldId != null and fieldId != ''">field_id,</if>
+            <if test="fieldName != null and fieldName != ''">field_name,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="fieldId != null and fieldId != ''">#{fieldId},</if>
+            <if test="fieldName != null and fieldName != ''">#{fieldName},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <select id="selectFieldByCondition" resultMap="FieldMap">
+        select field_id ,field_name from graph_field
+        <where >
+            del_flag = '0'
+            <if test="condition != null and !''.equals(condition)">
+                and field_name like '%'|| #{fieldName}|| '%'
+            </if>
+        </where>
+
+    </select>
+
+    <update id="deleteByFieldId" >
+        update graph_field
+        set    del_flag = '2'
+        where field_id = #{fieldId}
+    </update>
+
+
+</mapper>
