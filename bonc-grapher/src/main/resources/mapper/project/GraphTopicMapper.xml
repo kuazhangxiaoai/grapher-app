@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bonc.graph.project.mapper.GraphTopicMapper">
+    <resultMap id="TopicMap" type="Topic" >
+        <result property="topicId"    column="topic_id"    />
+        <result property="topicName"    column="topic_name"    />
+        <result property="fieldId"    column="field_id"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <insert id="addTopic" parameterType="Topic">
+        insert into graph_topic
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="topicId != null and topicId != ''">topic_id,</if>
+            <if test="topicName != null and topicName != ''">topic_name,</if>
+            <if test="fieldId != null and fieldId != ''">field_id,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="topicId != null and topicId != ''">#{topicId},</if>
+            <if test="topicName != null and topicName != ''">#{topicName},</if>
+            <if test="fieldId != null and fieldId != ''">#{fieldId},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <select id="selectTopicByCondition" resultMap="TopicMap">
+        select topic_id ,topic_name ,field_id from graph_topic
+        <where >
+            del_flag = '0'
+            <if test="condition != null and !''.equals(condition)">
+                and topic_name like '%'|| #{condition}|| '%'
+            </if>
+            <if test="fieldId != null and !''.equals(fieldId)">
+                and field_id = #{fieldId}
+            </if>
+
+        </where>
+
+    </select>
+
+    <update id="deleteBytopicId" >
+        update graph_topic
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where topic_id = #{topicId}
+    </update>
+</mapper>
