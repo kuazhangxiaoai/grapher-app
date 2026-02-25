@@ -20,10 +20,10 @@ public class GraphArticleController {
 
     /** 查找图谱 */
     @GetMapping("/selectArticle")
-    public Result selectArticle(){
+    public Result selectArticle(@RequestParam(required = false) String condition,@RequestParam(required = false) String topicId){
         Result result = new Result();
         try {
-            result.successResult(graphArticleService.selectArticle());
+            result.successResult(graphArticleService.selectArticle(condition,topicId));
         }catch (Exception e){
             result.failResult(e.getMessage());
             e.printStackTrace();

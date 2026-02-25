@@ -67,6 +67,15 @@
 
     <select id="selectArticle" resultMap="ArticleMap">
         select article_id ,article_name  from graph_article
+        <where >
+            del_flag = '0'
+            <if test="condition != null and !''.equals(condition)">
+                and article_name like '%'|| #{condition}|| '%'
+            </if>
+            <if test="topicId != null and !''.equals(topicId)">
+                and topic_id = #{topicId}
+            </if>
+        </where>
     </select>
 
 </mapper>

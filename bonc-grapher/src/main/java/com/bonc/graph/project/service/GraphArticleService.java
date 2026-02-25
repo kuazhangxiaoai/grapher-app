@@ -16,5 +16,5 @@ public interface GraphArticleService {
     /* 删除图谱 */
     int deleteArticle(Article article);
 
-    List<Map<String,Object>> selectArticle();
+    List<Map<String,Object>> selectArticle(String condition,String topicId);
 }
