@@ -2,6 +2,7 @@ package com.bonc.graph.project.mapper;
 
 import com.bonc.graph.project.domain.Article;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -17,5 +18,5 @@ public interface GraphArticleMapper {
      /* 删除图谱 */
      int deleteArticle(Article article);
 
-     List<Map<String, Object>> selectArticle();
+     List<Map<String, Object>> selectArticle(@Param("condition") String condition, @Param("topicId") String topicId);
 }

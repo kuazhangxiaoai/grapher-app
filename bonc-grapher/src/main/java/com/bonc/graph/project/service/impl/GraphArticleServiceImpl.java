@@ -23,8 +23,8 @@ public class GraphArticleServiceImpl implements GraphArticleService {
     private GraphArticleMapper graphArticleMapper;
 
     @Override
-    public List<Map<String, Object>> selectArticle() {
-        return graphArticleMapper.selectArticle();
+    public List<Map<String, Object>> selectArticle(String condition,String topicId) {
+        return graphArticleMapper.selectArticle(condition,topicId);
     }
     /*新增图谱*/
     @Override
