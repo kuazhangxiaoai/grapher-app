@@ -36,9 +36,8 @@ public class GraphArticleController {
     public Result addArticle(ArticleDto articleDto, @AuthenticationPrincipal PPTLoginUser loginUser){
         Result result = new Result();
         try {
-//            GraphUser user = loginUser.getUser();
-//            String userName = user.getUserName();
-            String userName = "123";
+            GraphUser user = loginUser.getUser();
+            String userName = user.getUserName();
             result.successResult(graphArticleService.addArticle(articleDto,userName));
         }catch (Exception e){
             result.failResult(e.getMessage());
