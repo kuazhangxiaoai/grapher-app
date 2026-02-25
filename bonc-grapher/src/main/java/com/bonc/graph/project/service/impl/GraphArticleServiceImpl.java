@@ -7,6 +7,7 @@ import com.bonc.graph.project.dto.ArticleDto;
 import com.bonc.graph.project.mapper.GraphArticleMapper;
 import com.bonc.graph.project.service.GraphArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,11 +22,24 @@ public class GraphArticleServiceImpl implements GraphArticleService {
 
     @Autowired
     private GraphArticleMapper graphArticleMapper;
-
+    @Value("${fileSave.path}")
+    private String FILE_SAVE;
+    @Value("${img.url}")
+    private String BASE_URL;
     @Override
     public List<Map<String, Object>> selectArticle(String condition,String topicId) {
         return graphArticleMapper.selectArticle(condition,topicId);
     }
+
+    @Override
+    public String getFileUrl(String articleId) {
+        String url = graphArticleMapper.getFileUrl(articleId);
+        String fileUrl = BASE_URL+url;
+
+        return fileUrl;
+
+    }
+
     /*新增图谱*/
     @Override
     public String addArticle(ArticleDto articleDto, String userName) {
@@ -59,7 +73,7 @@ public class GraphArticleServiceImpl implements GraphArticleService {
             // 生成新的唯一文件名
             String newFileName = UUID.randomUUID().toString() + suffix;
             // 拼接绝对路径
-            String filePath = fileSavePath + File.separator + newFileName;
+            String filePath = FILE_SAVE + File.separator + newFileName;
 
             // 将文件写入到文件夹中
             File destFile = new File(filePath);
@@ -73,7 +87,7 @@ public class GraphArticleServiceImpl implements GraphArticleService {
             }
 
             article.setFileName(originalFilename); // 原始文件名
-            article.setFileUrl(filePath);          // 文件完整路径
+            article.setFileUrl(newFileName);          // 文件相对路径
             article.setFileType(suffix);           // 文件后缀
             article.setFileSize(String.valueOf(file.getSize())); // 实际文件大小（字节）
         }

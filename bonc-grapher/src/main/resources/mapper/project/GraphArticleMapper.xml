@@ -77,5 +77,9 @@
             </if>
         </where>
     </select>
+    <select id="getFileUrl">
+        select file_url  from graph_article
+        where article_id = #{articleId}
+    </select>
 
 </mapper>

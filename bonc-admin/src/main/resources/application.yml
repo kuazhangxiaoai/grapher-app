@@ -136,3 +136,8 @@ xss:
 
 #md5盐值
 md5salt: bonc123
+
+fileSave:
+  path: D:/bonc/grapher
+img:
+  url: http://10.11.52.10:8091/img/filePath/

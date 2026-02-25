@@ -36,8 +36,9 @@ public class GraphArticleController {
     public Result addArticle(ArticleDto articleDto, @AuthenticationPrincipal PPTLoginUser loginUser){
         Result result = new Result();
         try {
-            GraphUser user = loginUser.getUser();
-            String userName = user.getUserName();
+//            GraphUser user = loginUser.getUser();
+//            String userName = user.getUserName();
+            String userName = "123";
             result.successResult(graphArticleService.addArticle(articleDto,userName));
         }catch (Exception e){
             result.failResult(e.getMessage());
@@ -78,6 +79,20 @@ public class GraphArticleController {
             article.setUpdateBy(updateBy);
             article.setArticleId(articleId);
             result.successResult(graphArticleService.deleteArticle(article));
+        }catch (Exception e){
+            result.failResult(e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+
+    /** 查询文件地址 */
+    @GetMapping("/getFileUrl")
+    public Result getFileUrl(@RequestParam String articleId){
+        Result result = new Result();
+        try {
+            result.successResult(graphArticleService.getFileUrl(articleId));
         }catch (Exception e){
             result.failResult(e.getMessage());
             e.printStackTrace();

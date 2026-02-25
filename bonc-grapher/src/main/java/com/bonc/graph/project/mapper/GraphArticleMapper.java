@@ -19,4 +19,6 @@ public interface GraphArticleMapper {
      int deleteArticle(Article article);
 
      List<Map<String, Object>> selectArticle(@Param("condition") String condition, @Param("topicId") String topicId);
+
+     String getFileUrl(String articleId);
 }
