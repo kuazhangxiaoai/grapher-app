@@ -64,7 +64,7 @@ spring:
   devtools:
     restart:
       # 热部署开关
-      enabled: true
+      enabled: false
   # redis 配置
   redis:
     # 地址
@@ -87,7 +87,12 @@ spring:
         max-active: 8
         # #连接池最大阻塞等待时间（使用负值表示没有限制）
         max-wait: -1ms
-
+  #neo4j配置
+  neo4j:
+    uri: bolt://10.11.52.173:7687
+    authentication:
+      username: neo4j
+      password: 12345678
 # token配置
 token:
   # 令牌自定义标识
