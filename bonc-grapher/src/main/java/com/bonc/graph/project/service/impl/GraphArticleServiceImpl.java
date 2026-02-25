@@ -41,13 +41,8 @@ public class GraphArticleServiceImpl implements GraphArticleService {
         // 创建方式
         String createMethod = articleDto.getCreateMethod();
         createMethod = (createMethod == null) ? "" : createMethod.trim();
-        if("自文本创建".equals(createMethod)){
-            article.setCreateMethod("0");
-        }else if("自数据库创建".equals(createMethod)){
-            article.setCreateMethod("1");
-        }else if("任意创建".equals(createMethod)){
-            article.setCreateMethod("2");
-        }
+        article.setCreateMethod(createMethod);
+
 
         // 处理文件上传
         MultipartFile file = articleDto.getMultipartFile();
