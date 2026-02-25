@@ -19,7 +19,7 @@ public class GraphArticleController {
     private GraphArticleService graphArticleService;
 
     /** 查找图谱 */
-    @PostMapping("/selectArticle")
+    @GetMapping("/selectArticle")
     public Result selectArticle(){
         Result result = new Result();
         try {

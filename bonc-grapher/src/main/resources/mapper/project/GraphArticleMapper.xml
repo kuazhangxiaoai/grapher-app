@@ -65,5 +65,8 @@
         where article_id = #{articleId}
     </update>
 
+    <select id="selectArticle" resultMap="ArticleMap">
+        select article_id ,article_name  from graph_article
+    </select>
 
 </mapper>
