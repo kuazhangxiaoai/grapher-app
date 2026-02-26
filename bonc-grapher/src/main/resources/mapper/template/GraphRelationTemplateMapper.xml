@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bonc.graph.template.mapper.GraphRelationTemplateMapper">
+
+    <!-- 基础结果映射 -->
+    <resultMap id="BaseResultMap" type="com.bonc.graph.template.domain.GraphRelationTemplate">
+        <id column="relation_template_id" property="relationTemplateId"/>
+        <result column="topic_id" property="topicId"/>
+        <result column="relation_template_name" property="relationTemplateName"/>
+        <result column="relation_template_type" property="relationTemplateType"/>
+        <result column="start_node_template_id" property="startNodeTemplateId"/>
+        <result column="end_node_template_id" property="endNodeTemplateId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="is_library_flag" property="isLibraryFlag"/>
+        <result column="is_delete_flag" property="isDeleteFlag"/>
+    </resultMap>
+
+    <!-- 按topicId查询未删除的关系模版 -->
+    <select id="selectByTopicId" resultMap="BaseResultMap">
+        select * from graph_relation_template
+        where topic_id = #{topicId} and is_delete_flag = '0'
+    </select>
+
+    <!-- 按ID查询未删除的关系模版 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        select * from graph_relation_template
+        where relation_template_id = #{id} and is_delete_flag = '0'
+    </select>
+
+    <!-- 校验名称+专题ID是否重复（未删除） -->
+    <select id="countByNameAndTopicId" resultType="int">
+        select count(1) from graph_relation_template
+        where relation_template_name = #{name}
+          and topic_id = #{topicId}
+          and is_delete_flag = '0'
+    </select>
+
+    <!-- 插入关系模版（自增ID由PostgreSQL序列生成） -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="relationTemplateId">
+        insert into graph_relation_template
+        (topic_id, relation_template_name, relation_template_type, start_node_template_id,
+         end_node_template_id, create_time, update_time, is_library_flag, is_delete_flag)
+        values
+            (#{topicId}, #{relationTemplateName}, #{relationTemplateType}, #{startNodeTemplateId},
+             #{endNodeTemplateId}, now(), now(), #{isLibraryFlag}, '0')
+    </insert>
+
+    <!-- 更新删除标识 -->
+    <update id="updateDeleteFlag">
+        update graph_relation_template
+        set is_delete_flag = #{isDeleteFlag}, update_time = now()
+        where relation_template_id = #{id}
+    </update>
+
+    <!-- 模糊查询组件库中的关系模版（isLibraryFlag=1、未删除） -->
+    <select id="selectLibraryByLikeName" resultMap="BaseResultMap">
+        select * from graph_relation_template
+        where is_library_flag = '1'
+          and is_delete_flag = '0'
+          and relation_template_name like concat('%', #{name}, '%')
+    </select>
+
+</mapper>

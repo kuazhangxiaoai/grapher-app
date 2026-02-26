@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bonc.graph.template.mapper.GraphNodeTemplateMapper">
+
+    <resultMap id="BaseResultMap" type="com.bonc.graph.template.domain.GraphNodeTemplate">
+        <id column="node_template_id" property="nodeTemplateId"/>
+        <result column="topic_id" property="topicId"/>
+        <result column="node_template_name" property="nodeTemplateName"/>
+        <result column="node_template_description" property="nodeTemplateDescription"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="is_library_flag" property="isLibraryFlag"/>
+        <result column="is_delete_flag" property="isDeleteFlag"/>
+        <result column="node_template_color" property="nodeTemplateColor"/>
+    </resultMap>
+
+    <select id="selectByTopicId" resultMap="BaseResultMap">
+        select * from graph_node_template
+        where topic_id = #{topicId} and is_delete_flag = '0'
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select * from graph_node_template
+        where node_template_id = #{id} and is_delete_flag = '0'
+    </select>
+
+    <select id="countByNameAndTopicId" resultType="int">
+        select count(1) from graph_node_template
+        where node_template_name = #{name} and topic_id = #{topicId} and is_delete_flag = '0'
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="nodeTemplateId">
+        insert into graph_node_template
+        (topic_id, node_template_name, node_template_description, create_time, update_time, is_library_flag, is_delete_flag,node_template_color)
+        values
+            (#{topicId}, #{nodeTemplateName}, #{nodeTemplateDescription}, now(), now(), #{isLibraryFlag}, '0',#{nodeTemplateColor})
+    </insert>
+
+    <update id="updateDeleteFlag">
+        update graph_node_template
+        set is_delete_flag = #{isDeleteFlag}, update_time = now()
+        where node_template_id = #{id}
+    </update>
+
+    <select id="selectLibraryByLikeName" resultMap="BaseResultMap">
+        select * from graph_node_template
+        where is_library_flag = '1' and is_delete_flag = '0'
+          and node_template_name like concat('%', #{name}, '%')
+    </select>
+
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bonc.graph.template.mapper.GraphRelationTemplatePropertyMapper">
+
+    <!-- 基础结果映射 -->
+    <resultMap id="BaseResultMap" type="com.bonc.graph.template.domain.GraphRelationTemplateProperty">
+        <id column="relation_template_property_id" property="relationTemplatePropertyId"/>
+        <result column="relation_template_id" property="relationTemplateId"/>
+        <result column="property_key" property="propertyKey"/>
+        <result column="property_type" property="propertyType"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="is_delete_flag" property="isDeleteFlag"/>
+    </resultMap>
+
+    <!-- 按关系模版ID查询未删除的属性 -->
+    <select id="selectByRelationTemplateId" resultMap="BaseResultMap">
+        select * from graph_relation_template_property
+        where relation_template_id = #{relationTemplateId}
+          and is_delete_flag = '0'
+    </select>
+
+    <!-- 批量插入关系模版属性 -->
+    <insert id="batchInsert">
+        insert into graph_relation_template_property
+        (relation_template_id, property_key, property_type, create_time, update_time, is_delete_flag)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.relationTemplateId}, #{item.propertyKey}, #{item.propertyType}, now(), now(), '0')
+        </foreach>
+    </insert>
+
+    <!-- 按关系模版ID批量更新删除标识 -->
+    <update id="updateDeleteFlagByRelationTemplateId">
+        update graph_relation_template_property
+        set is_delete_flag = #{isDeleteFlag}, update_time = now()
+        where relation_template_id = #{relationTemplateId}
+    </update>
+
+</mapper>
