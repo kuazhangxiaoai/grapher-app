@@ -8,8 +8,11 @@ import com.bonc.graph.project.dto.ArticleDto;
 import com.bonc.graph.project.service.GraphArticleService;
 import com.bonc.graph.user.domain.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import java.util.*;
 
 @RestController
 @RequestMapping("/graph_api/v1/article")
@@ -20,37 +23,45 @@ public class GraphArticleController {
 
     /** 查找图谱 */
     @GetMapping("/selectArticle")
-    public Result selectArticle(@RequestParam(required = false) String condition,@RequestParam(required = false) String topicId){
-        Result result = new Result();
+    public ResponseEntity<Object> selectArticle(@RequestParam(required = false) String condition, @RequestParam(required = false) String topicId){
+        Map<String, Object> result = new HashMap<String, Object>();
         try {
-            result.successResult(graphArticleService.selectArticle(condition,topicId));
+            result.put("data", graphArticleService.selectArticle(condition,topicId));
+            result.put("code", 200);
+            return new ResponseEntity<Object>(result, HttpStatus.OK);
         }catch (Exception e){
-            result.failResult(e.getMessage());
+            result.put("data", null);
+            result.put("message", e.getMessage());
+            result.put("code", 500);
             e.printStackTrace();
+            return new ResponseEntity<Object>(result, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return result;
     }
 
     /** 新增图谱 */
     @PostMapping("/addArticle")
-    public Result addArticle(ArticleDto articleDto, @AuthenticationPrincipal PPTLoginUser loginUser){
-        Result result = new Result();
+    public ResponseEntity<Object> addArticle(ArticleDto articleDto, @AuthenticationPrincipal PPTLoginUser loginUser){
+        Map<String, Object> result = new HashMap<String, Object>();
         try {
             GraphUser user = loginUser.getUser();
             String userName = user.getUserName();
-            result.successResult(graphArticleService.addArticle(articleDto,userName));
+            result.put("data", graphArticleService.addArticle(articleDto,userName));
+            result.put("code", 200);
+            return new ResponseEntity<Object>(result, HttpStatus.OK);
         }catch (Exception e){
-            result.failResult(e.getMessage());
+            result.put("data", null);
+            result.put("message", e.getMessage());
+            result.put("code", 500);
             e.printStackTrace();
+            return new ResponseEntity<Object>(result, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return result;
     }
 
 
     /** 修改图谱 */
     @GetMapping("/updateArticle")
-    public Result updateArticle(@RequestParam String articleId,@RequestParam String articleName,@AuthenticationPrincipal PPTLoginUser loginUser){
-        Result result = new Result();
+    public ResponseEntity<Object> updateArticle(@RequestParam String articleId,@RequestParam String articleName,@AuthenticationPrincipal PPTLoginUser loginUser){
+        Map<String, Object> result = new HashMap<String, Object>();
         try {
             GraphUser user = loginUser.getUser();
             String updateBy = user.getUserName();
@@ -58,45 +69,69 @@ public class GraphArticleController {
             article.setUpdateBy(updateBy);
             article.setArticleId(articleId);
             article.setArticleName(articleName);
-            result.successResult(graphArticleService.updateArticle(article));
+            result.put("data", graphArticleService.updateArticle(article));
+            result.put("code", 200);
+            return new ResponseEntity<Object>(result, HttpStatus.OK);
         }catch (Exception e){
-            result.failResult(e.getMessage());
+            result.put("data", null);
+            result.put("message", e.getMessage());
+            result.put("code", 500);
             e.printStackTrace();
+            return new ResponseEntity<Object>(result, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return result;
     }
 
 
     /** 删除图谱 */
     @GetMapping("/deleteArticle")
-    public Result deleteArticle(@RequestParam String articleId,@AuthenticationPrincipal PPTLoginUser loginUser){
-        Result result = new Result();
+    public ResponseEntity<Object> deleteArticle(@RequestParam String articleId,@AuthenticationPrincipal PPTLoginUser loginUser){
+        Map<String, Object> result = new HashMap<String, Object>();
         try {
             GraphUser user = loginUser.getUser();
             String updateBy = user.getUserName();
             Article article = new Article();
             article.setUpdateBy(updateBy);
             article.setArticleId(articleId);
-            result.successResult(graphArticleService.deleteArticle(article));
+            result.put("data", graphArticleService.deleteArticle(article));
+            result.put("code", 200);
+            return new ResponseEntity<Object>(result, HttpStatus.OK);
         }catch (Exception e){
-            result.failResult(e.getMessage());
+            result.put("data", null);
+            result.put("message", e.getMessage());
+            result.put("code", 500);
             e.printStackTrace();
+            return new ResponseEntity<Object>(result, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return result;
     }
 
 
     /** 查询文件地址 */
     @GetMapping("/getFileUrl")
-    public Result getFileUrl(@RequestParam String articleId){
-        Result result = new Result();
+    public ResponseEntity<Object> getFileUrl(@RequestParam String articleId){
+        Map<String, Object> result = new HashMap<String, Object>();
         try {
-            result.successResult(graphArticleService.getFileUrl(articleId));
+            String url = graphArticleService.getFileUrl(articleId);
+            if(url == null || url.isEmpty()) {
+                //NOT FOUND
+                result.put("data", null);
+                result.put("code", 404);
+                return new ResponseEntity<Object>(result, HttpStatus.NOT_FOUND);
+            }
+            else {
+                //SUCCESS
+                result.put("data", url);
+                result.put("code", 200);
+                return new ResponseEntity<Object>(result, HttpStatus.OK);
+            }
+
         }catch (Exception e){
-            result.failResult(e.getMessage());
+            //ERROR
+            result.put("data", null);
+            result.put("message", e.getMessage());
+            result.put("code", 500);
             e.printStackTrace();
+            return new ResponseEntity<Object>(result, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return result;
     }
 
 

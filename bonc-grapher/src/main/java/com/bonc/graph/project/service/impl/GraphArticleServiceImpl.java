@@ -34,9 +34,13 @@ public class GraphArticleServiceImpl implements GraphArticleService {
     @Override
     public String getFileUrl(String articleId) {
         String url = graphArticleMapper.getFileUrl(articleId);
-        String fileUrl = BASE_URL+url;
-
-        return fileUrl;
+        if(url == null || url.isEmpty() )
+        {
+            return null;
+        }
+        else {
+            return BASE_URL+url;
+        }
 
     }
 

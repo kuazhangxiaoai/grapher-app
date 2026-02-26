@@ -4,11 +4,13 @@ package com.bonc.graph.project.mapper;
 import com.bonc.graph.project.domain.Topic;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
 
 @Mapper
+@Repository
 public interface GraphTopicMapper {
     /**
      * 增加专题
