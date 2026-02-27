@@ -74,6 +74,14 @@
             <artifactId>postgresql</artifactId>
             <version>42.6.0</version> <!-- 使用最新版本 -->
         </dependency>
+
+        <!-- HanLP 分词核心依赖 -->
+        <dependency>
+            <groupId>com.hankcs</groupId>
+            <artifactId>hanlp</artifactId>
+            <version>portable-1.8.4</version>
+        </dependency>
+
     </dependencies>
 
     <properties>
