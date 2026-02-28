@@ -63,7 +63,7 @@ public class GraphTopicController {
     }
 
     /**
-     * 删除主题
+     * 删除专题
      * @param topicId 领域ID
      * @return
      */
@@ -72,13 +72,28 @@ public class GraphTopicController {
     {
         Result result = new Result();
         try {
-            log.info("开始调用登录接口:/graph_api/v1/topic/remove");
+            log.info("开始调用专题删除接口:/graph_api/v1/topic/remove");
             Topic topic = new Topic();
             GraphUser user = loginUser.getUser();
             String userName = user.getUserName();
             topic.setUpdateBy(userName);
             topic.setTopicId(topicId);
             result.successResult(graphTopicService.deleteBytopicId(topic));
+        }catch (Exception e){
+            result.failResult(e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @GetMapping("/copyTopic")
+    public Result copyTopic(@RequestParam("topicId") String topicId,
+                            @RequestParam(required = false, value = "topicName") String topicName,@AuthenticationPrincipal PPTLoginUser loginUser){
+        Result result = new Result();
+        try {
+            GraphUser user = loginUser.getUser();
+            String userName = user.getUserName();
+            result.successResult(graphTopicService.copyTopic(topicId,null,topicName,userName));
         }catch (Exception e){
             result.failResult(e.getMessage());
             e.printStackTrace();

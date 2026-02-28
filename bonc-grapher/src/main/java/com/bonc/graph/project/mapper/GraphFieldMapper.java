@@ -1,6 +1,7 @@
 package com.bonc.graph.project.mapper;
 
 import com.bonc.graph.project.domain.Field;
+import com.bonc.graph.project.domain.Topic;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -29,4 +30,12 @@ public interface GraphFieldMapper {
      * @return
      */
     int deleteByFieldId(Field field);
+
+    /**
+     * 根据领域id进行查询
+     * @param fieldId
+     * @return
+     */
+    Field selectByFieldId(String fieldId);
+
 }

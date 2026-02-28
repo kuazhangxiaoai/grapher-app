@@ -27,5 +27,7 @@ public interface GraphFieldService {
      * @return
      */
     int deleteByFieldId(Field field);
+    /*复制领域*/
+    String copyField(String fieldId, String fieLdName, String user);
 
 }

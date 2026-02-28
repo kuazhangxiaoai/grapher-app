@@ -14,4 +14,7 @@ public interface GraphTopicService {
 
     /* 删除主题  */
     int deleteBytopicId(Topic topic);
+
+    /* 复制主题 */
+    String copyTopic(String topicId, String newFieldId,String topicName, String userName);
 }

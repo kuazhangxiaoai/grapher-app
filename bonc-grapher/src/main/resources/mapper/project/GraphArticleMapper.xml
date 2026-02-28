@@ -82,4 +82,40 @@
         where article_id = #{articleId}
     </select>
 
+    <!--    根据topicId查找articles-->
+    <select id="selectArticlesByTopicId" resultMap="ArticleMap">
+        select * from graph_article where topic_id = #{oldTopicId}
+    </select>
+
+<!--    批量插入-->
+    <insert id="batchInsertArticles" parameterType="java.util.List">
+        INSERT INTO graph_article
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="list != null and list.size() > 0">
+                <if test="list[0].articleId != null and list[0].articleId != ''">article_id,</if>
+                <if test="list[0].articleName != null and list[0].articleName != ''">article_name,</if>
+                <if test="list[0].createMethod != null and list[0].createMethod != ''">create_method,</if>
+                <if test="list[0].fileName != null and list[0].fileName != ''">file_name,</if>
+                <if test="list[0].fileUrl != null and list[0].fileUrl != ''">file_url,</if>
+                <if test="list[0].fileType != null and list[0].fileType != ''">file_type,</if>
+                <if test="list[0].fileSize != null and list[0].fileSize != ''">file_size,</if>
+                <if test="list[0].topicId != null and list[0].topicId != ''">topic_id,</if>
+                <if test="list[0].createBy != null and list[0].createBy != ''">create_by,</if>
+            </if>
+        </trim>
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="item.articleId != null and item.articleId != ''">#{item.articleId},</if>
+                <if test="item.articleName != null and item.articleName != ''">#{item.articleName},</if>
+                <if test="item.createMethod != null and item.createMethod != ''">#{item.createMethod},</if>
+                <if test="item.fileName != null and item.fileName != ''">#{item.fileName},</if>
+                <if test="item.fileUrl != null and item.fileUrl != ''">#{item.fileUrl},</if>
+                <if test="item.fileType != null and item.fileType != ''">#{item.fileType},</if>
+                <if test="item.fileSize != null and item.fileSize != ''">#{item.fileSize},</if>
+                <if test="item.topicId != null and item.topicId != ''">#{item.topicId},</if>
+                <if test="item.createBy != null and item.createBy != ''">#{item.createBy},</if>
+            </trim>
+        </foreach>
+    </insert>
 </mapper>

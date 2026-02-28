@@ -62,4 +62,42 @@
         </trim>
         where topic_id = #{topicId}
     </update>
+    <select id="selectTopicByFieldId" resultMap="TopicMap">
+        select * from  graph_topic where field_id = #{fieldId}
+    </select>
+
+    <!--    根据主题id进行查找-->
+    <select id="selectTopicById" resultMap="TopicMap">
+        select * from graph_topic where topic_id = #{topicId}
+    </select>
+
+    <!--批量插入-->
+    <insert id="batchInsertTopics" parameterType="java.util.List">
+        INSERT INTO graph_topic
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="list != null and list.size() > 0">
+                <if test="list[0].topicId != null and list[0].topicId != ''">topic_id,</if>
+                <if test="list[0].topicName != null and list[0].topicName != ''">topic_name,</if>
+                <if test="list[0].fieldId != null and list[0].fieldId != ''">field_id,</if>
+                <if test="list[0].delFlag != null">del_flag,</if>
+                <if test="list[0].createBy != null">create_by,</if>
+                <if test="list[0].createTime != null">create_time,</if>
+                <if test="list[0].updateBy != null">update_by,</if>
+                <if test="list[0].updateTime != null">update_time,</if>
+            </if>
+        </trim>
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="item.topicId != null and item.topicId != ''">#{item.topicId},</if>
+                <if test="item.topicName != null and item.topicName != ''">#{item.topicName},</if>
+                <if test="item.fieldId != null and item.fieldId != ''">#{item.fieldId},</if>
+                <if test="item.delFlag != null">#{item.delFlag},</if>
+                <if test="item.createBy != null">#{item.createBy},</if>
+                <if test="item.createTime != null">#{item.createTime},</if>
+                <if test="item.updateBy != null">#{item.updateBy},</if>
+                <if test="item.updateTime != null">#{item.updateTime},</if>
+            </trim>
+        </foreach>
+    </insert>
 </mapper>

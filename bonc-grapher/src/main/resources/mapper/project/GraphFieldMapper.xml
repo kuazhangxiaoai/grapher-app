@@ -58,5 +58,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
 
+    <select id="selectByFieldId" resultMap="FieldMap">
+        select * from graph_field
+        where del_flag = '0' and field_id = #{fieldId}
+    </select>
+
 
 </mapper>

@@ -20,7 +20,15 @@ public interface GraphArticleMapper {
      /* 删除图谱 */
      int deleteArticle(Article article);
 
+     /*根据条件查询图谱*/
      List<Map<String, Object>> selectArticle(@Param("condition") String condition, @Param("topicId") String topicId);
 
+     /*获取文件地址*/
      String getFileUrl(String articleId);
+
+     /*通过主题id查找图谱*/
+     List<Article> selectArticlesByTopicId(String oldTopicId);
+
+     /*批量插入图谱*/
+     void batchInsertArticles(List<Article> newArticles);
 }

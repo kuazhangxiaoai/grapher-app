@@ -7,6 +7,7 @@ import com.bonc.common.utils.DateUtils;
 import com.bonc.graph.project.domain.Field;
 import com.bonc.graph.project.service.GraphFieldService;
 import com.bonc.graph.user.domain.Result;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * 领域
  */
+@Slf4j
 @RestController
 @RequestMapping("/graph_api/v1/field")
 public class GraphFieldController {
@@ -28,14 +30,14 @@ public class GraphFieldController {
      * @return
      */
     @PostMapping("/addField")
-    public Result addField(@RequestBody Field field,  @AuthenticationPrincipal PPTLoginUser loginUser){
+    public Result addField(@RequestBody Field field, @AuthenticationPrincipal PPTLoginUser loginUser) {
         Result result = new Result();
         try {
             GraphUser user = loginUser.getUser();
             String userName = user.getUserName();
             field.setCreateBy(userName);
             result.successResult(graphFieldService.addField(field));
-        }catch (Exception e){
+        } catch (Exception e) {
             result.failResult(e.getMessage());
             e.printStackTrace();
         }
@@ -70,6 +72,7 @@ public class GraphFieldController {
     {
         Result result = new Result();
         try {
+            log.info("开始调用领域删除--remove接口");
             Field field = new Field();
             GraphUser user = loginUser.getUser();
             String userName = user.getUserName();
@@ -82,6 +85,20 @@ public class GraphFieldController {
         }
         return result;
     }
+    @GetMapping("/copyField")
+    public Result copyField(@RequestParam("fieldId") String fieldId,
+                            @RequestParam(required = false, value = "fieldName") String fieldName,@AuthenticationPrincipal PPTLoginUser loginUser){
+        Result result = new Result();
+        try {
+            GraphUser user = loginUser.getUser();
+            String userName = user.getUserName();
 
+            result.successResult(graphFieldService.copyField(fieldId,fieldName,userName));
+        }catch (Exception e){
+            result.failResult(e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
 
 }
