@@ -62,13 +62,13 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
     // 2. 本体设计-节点模版保存接口
     @Transactional(rollbackFor = Exception.class)
     public void saveNodeTemplate(NodeTemplateSaveDTO dto) {
-        // 处理组件库标识=1的情况：插入两份数据
+
         List<GraphNodeTemplate> templates = new ArrayList<>();
-        GraphNodeTemplate mainTemplate = buildNodeTemplate(dto, dto.getTopicId(), dto.getIsLibraryFlag());
+        GraphNodeTemplate mainTemplate = buildNodeTemplate(dto, dto.getTopicId(),"0");
         templates.add(mainTemplate);
 
         if ("1".equals(dto.getIsLibraryFlag())) {
-            // 第二份：topicId为空，isLibraryFlag=1
+            // 处理组件库标识=1的情况：插入组件库数据，topicId为空，isLibraryFlag=1
             GraphNodeTemplate libraryTemplate = buildNodeTemplate(dto, null, "1");
             templates.add(libraryTemplate);
         }
@@ -88,7 +88,7 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
     @Transactional(rollbackFor = Exception.class)
     public void saveRelationTemplate(RelationTemplateSaveDTO dto) {
         List<GraphRelationTemplate> templates = new ArrayList<>();
-        GraphRelationTemplate mainTemplate = buildRelationTemplate(dto, dto.getTopicId(), dto.getIsLibraryFlag());
+        GraphRelationTemplate mainTemplate = buildRelationTemplate(dto, dto.getTopicId(), "0");
         templates.add(mainTemplate);
 
         if ("1".equals(dto.getIsLibraryFlag())) {
