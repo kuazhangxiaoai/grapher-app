@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bonc.graph.sequence.mapper.GraphNodeMapper">
+
+    <resultMap id="BaseResultMap" type="com.bonc.graph.sequence.domain.GraphNode">
+        <id column="node_id" property="nodeId"/>
+        <result column="node_hash" property="nodeHash"/>
+        <result column="node_name" property="nodeName"/>
+        <result column="node_description" property="nodeDescription"/>
+        <result column="node_color" property="nodeColor"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="field_id" property="fieldId"/>
+        <result column="topic_id" property="topicId"/>
+        <result column="article_id" property="articleId"/>
+        <result column="sequence_id" property="sequenceId"/>
+    </resultMap>
+
+    <insert id="batchInsert">
+        INSERT INTO graph_node (
+        node_hash, node_name, node_description, node_color,
+        create_time, update_time, field_id, topic_id,
+        article_id, sequence_id
+        ) VALUES
+        <foreach collection="nodes" item="item" separator=",">
+            (
+            #{item.nodeHash}, #{item.nodeName}, #{item.nodeDescription}, #{item.nodeColor},
+            #{item.createTime}, #{item.updateTime}, #{item.fieldId}, #{item.topicId},
+            #{item.articleId}, #{item.sequenceId}
+            )
+        </foreach>
+    </insert>
+
+    <delete id="deleteBySequenceId">
+        DELETE FROM graph_node WHERE sequence_id = #{sequenceId}
+    </delete>
+
+    <select id="selectBySequenceId" resultMap="BaseResultMap">
+        SELECT * FROM graph_node WHERE sequence_id = #{sequenceId}
+    </select>
+
+    <select id="selectDistinctByArticleId" resultMap="BaseResultMap">
+        SELECT DISTINCT ON (node_hash) * FROM graph_node WHERE article_id = #{articleId}
+    </select>
+
+</mapper>

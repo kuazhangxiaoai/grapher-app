@@ -118,4 +118,9 @@
             </trim>
         </foreach>
     </insert>
+
+    <select id="selectByArticleId" resultMap="ArticleMap">
+        SELECT * FROM graph_article WHERE article_id = #{articleId}
+    </select>
+
 </mapper>

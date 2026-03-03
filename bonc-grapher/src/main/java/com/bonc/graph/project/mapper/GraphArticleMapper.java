@@ -31,4 +31,9 @@ public interface GraphArticleMapper {
 
      /*批量插入图谱*/
      void batchInsertArticles(List<Article> newArticles);
+
+     /**
+      * 根据articleId查询文章信息
+      */
+     Article selectByArticleId(@Param("articleId") String articleId);
 }

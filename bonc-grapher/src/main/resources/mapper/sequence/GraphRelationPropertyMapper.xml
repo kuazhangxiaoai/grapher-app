@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bonc.graph.sequence.mapper.GraphRelationPropertyMapper">
+
+    <resultMap id="BaseResultMap" type="com.bonc.graph.sequence.domain.GraphRelationProperty">
+        <id column="relation_property_id" property="relationPropertyId"/>
+        <result column="relation_id" property="relationId"/>
+        <result column="property_key" property="propertyKey"/>
+        <result column="property_value" property="propertyValue"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <insert id="batchInsert">
+        INSERT INTO graph_relation_property (
+        relation_id, property_key, property_value, create_time, update_time
+        ) VALUES
+        <foreach collection="properties" item="item" separator=",">
+            (
+            #{item.relationId}, #{item.propertyKey}, #{item.propertyValue},
+            #{item.createTime}, #{item.updateTime}
+            )
+        </foreach>
+    </insert>
+
+    <delete id="deleteByRelationIds">
+        DELETE FROM graph_relation_property WHERE relation_id IN
+        <foreach collection="relationIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <select id="selectByRelationId" resultMap="BaseResultMap">
+        SELECT * FROM graph_relation_property WHERE relation_id = #{relationId}
+    </select>
+
+    <delete id="deleteBySequenceId">
+        DELETE FROM graph_relation_property
+        WHERE relation_id IN (SELECT relation_id FROM graph_relation WHERE sequence_id = #{sequenceId})
+    </delete>
+
+</mapper>

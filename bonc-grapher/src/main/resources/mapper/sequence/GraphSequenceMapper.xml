@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bonc.graph.sequence.mapper.GraphSequenceMapper">
+
+    <resultMap id="BaseResultMap" type="com.bonc.graph.sequence.domain.GraphSequence">
+        <id column="sequence_id" property="sequenceId"/>
+        <result column="sequence_content" property="sequenceContent"/>
+        <result column="sequence_x0" property="sequenceX0"/>
+        <result column="sequence_y0" property="sequenceY0"/>
+        <result column="sequence_x1" property="sequenceX1"/>
+        <result column="sequence_y1" property="sequenceY1"/>
+        <result column="sequence_page" property="sequencePage"/>
+        <result column="article_id" property="articleId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="selectByArticleId" resultMap="BaseResultMap">
+        SELECT * FROM graph_sequence WHERE article_id = #{articleId} ORDER BY create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.bonc.graph.sequence.domain.GraphSequence">
+        INSERT INTO graph_sequence (
+            sequence_id, sequence_content, sequence_x0, sequence_y0,
+            sequence_x1, sequence_y1, sequence_page, article_id,
+            create_time, update_time
+        ) VALUES (
+                     #{sequenceId}, #{sequenceContent}, #{sequenceX0}, #{sequenceY0},
+                     #{sequenceX1}, #{sequenceY1}, #{sequencePage}, #{articleId},
+                     #{createTime}, #{updateTime}
+                 )
+    </insert>
+
+    <update id="updateUpdateTime">
+        UPDATE graph_sequence SET update_time = #{updateTime} WHERE sequence_id = #{sequenceId}
+    </update>
+
+</mapper>

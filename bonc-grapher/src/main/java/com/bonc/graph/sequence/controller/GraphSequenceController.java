@@ -1,4 +1,4 @@
-package com.bonc.graph.sequence;
+package com.bonc.graph.sequence.controller;
 
 import com.bonc.common.utils.StringUtils;
 import com.bonc.graph.user.domain.Result;

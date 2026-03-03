@@ -41,4 +41,9 @@ public interface GraphTopicMapper {
 
     /*根据主题id查询*/
     Topic selectTopicById(String topicId);
+
+    /**
+     * 根据topicId查询专题信息
+     */
+    Topic selectByTopicId(@Param("topicId") String topicId);
 }

@@ -100,4 +100,9 @@
             </trim>
         </foreach>
     </insert>
+
+    <select id="selectByTopicId" resultMap="TopicMap">
+        SELECT * FROM graph_topic WHERE topic_id = #{topicId}
+    </select>
+
 </mapper>

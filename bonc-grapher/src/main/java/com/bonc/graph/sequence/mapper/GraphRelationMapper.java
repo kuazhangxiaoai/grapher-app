@@ -1,0 +1,30 @@
+package com.bonc.graph.sequence.mapper;
+
+import com.bonc.graph.sequence.domain.GraphRelation;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+@Mapper
+public interface GraphRelationMapper {
+    /**
+     * 批量插入关系
+     */
+    int batchInsert(@Param("relations") List<GraphRelation> relations);
+
+    /**
+     * 根据sequenceId删除关系
+     */
+    int deleteBySequenceId(@Param("sequenceId") String sequenceId);
+
+    /**
+     * 根据sequenceId查询关系列表
+     */
+    List<GraphRelation> selectBySequenceId(@Param("sequenceId") String sequenceId);
+
+    /**
+     * 根据articleId查询关系列表（去重）
+     */
+    List<GraphRelation> selectDistinctByArticleId(@Param("articleId") String articleId);
+}
