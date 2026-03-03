@@ -84,7 +84,7 @@
 
     <!--    根据topicId查找articles-->
     <select id="selectArticlesByTopicId" resultMap="ArticleMap">
-        select * from graph_article where topic_id = #{oldTopicId}
+        select * from graph_article where topic_id = #{oldTopicId}  and  del_flag = '0'
     </select>
 
 <!--    批量插入-->

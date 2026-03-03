@@ -63,12 +63,12 @@
         where topic_id = #{topicId}
     </update>
     <select id="selectTopicByFieldId" resultMap="TopicMap">
-        select * from  graph_topic where field_id = #{fieldId}
+        select * from  graph_topic where field_id = #{fieldId}  and del_flag = '0'
     </select>
 
     <!--    根据主题id进行查找-->
     <select id="selectTopicById" resultMap="TopicMap">
-        select * from graph_topic where topic_id = #{topicId}
+        select * from graph_topic where topic_id = #{topicId} and  del_flag = '0'
     </select>
 
     <!--批量插入-->
