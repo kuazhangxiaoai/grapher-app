@@ -8,6 +8,7 @@ import com.bonc.graph.sequence.service.GraphCoreService;
 import com.bonc.graph.sequence.service.GraphSequenceService;
 import com.bonc.graph.user.domain.Result;
 import com.bonc.graph.utils.HanLPSegmentUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -17,6 +18,7 @@ import java.util.Map;
 /**
  * 图谱核心接口
  */
+@Slf4j
 @RestController
 @RequestMapping("/graph_api/v1/sequence")
 public class GraphController {
@@ -26,9 +28,10 @@ public class GraphController {
     @Resource
     private GraphCoreService graphCoreService;
 
-    // 1. 图谱构建-段落分词接口开发
+    // 1. 图谱构建-段落分词接口
     @PostMapping("/segmentSequence")
     public Result segmentSequence(@RequestBody Map<String,Object> reqMap) {
+        log.info("图谱构建-段落分词接口:/graph_api/v1/sequence/segmentSequence");
         Result result = new Result();
         try {
             String sequenceContent = (String) reqMap.get("sequenceContent");
@@ -53,6 +56,7 @@ public class GraphController {
      */
     @GetMapping("/getSequenceList")
     public Result getSequenceList(@RequestParam String articleId) {
+        log.info("图谱构建-段落列表查询接口:/graph_api/v1/sequence/getSequenceList");
         Result result = new Result();
         try {
             List<GraphSequence> resList = graphSequenceService.getSequenceListByArticleId(articleId);
@@ -71,6 +75,7 @@ public class GraphController {
      */
     @PostMapping("/saveGraph")
     public Result saveGraph(@RequestBody GraphSaveDTO saveDTO) {
+        log.info("图谱构建-段落对应图谱保存提交接口:/graph_api/v1/sequence/saveGraph");
         Result result = new Result();
         try {
             graphCoreService.saveGraph(saveDTO);
@@ -89,6 +94,7 @@ public class GraphController {
      */
     @GetMapping("/getGraphBySequenceId")
     public Result getGraphBySequenceId(@RequestParam String sequenceId) {
+        log.info("图谱构建-段落对应图谱查询接口:/graph_api/v1/sequence/getGraphBySequenceId");
         Result result = new Result();
         try {
             GraphResponseDTO res = graphCoreService.getGraphBySequenceId(sequenceId);
@@ -107,6 +113,7 @@ public class GraphController {
      */
     @GetMapping("/getGraphByArticleId")
     public Result getGraphByArticleId(@RequestParam String articleId) {
+        log.info("图谱构建-文章对应图谱查询接口:/graph_api/v1/sequence/getGraphByArticleId");
         Result result = new Result();
         try {
             GraphResponseDTO res = graphCoreService.getGraphByArticleId(articleId);

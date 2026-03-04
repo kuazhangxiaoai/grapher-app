@@ -148,7 +148,7 @@ public class TemplateDesignController {
     // 8. 根据topicId查询节点列表接口
     @GetMapping("/queryNodeTemplate")
     public Result queryNodeTemplate(@RequestParam String topicId) {
-        log.info("节点/关系模版查询接口:/graph_api/v1/template/queryNodeTemplate");
+        log.info("根据topicId查询节点列表接口:/graph_api/v1/template/queryNodeTemplate");
         log.info("topicId:"+ topicId);
         Result result = new Result();
         try {
@@ -164,7 +164,7 @@ public class TemplateDesignController {
     // 9. 根据nodeTemplateId查询节点属性列表接口
     @GetMapping("/queryNodeTemplateProperties")
     public Result queryNodeTemplateProperties(@RequestParam Long nodeTemplateId) {
-        log.info("节点/关系模版查询接口:/graph_api/v1/template/queryNodeTemplateProperties");
+        log.info("根据nodeTemplateId查询节点属性列表接口:/graph_api/v1/template/queryNodeTemplateProperties");
         log.info("nodeTemplateId:"+ nodeTemplateId);
         Result result = new Result();
         try {
