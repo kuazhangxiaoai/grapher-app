@@ -50,4 +50,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
           and node_template_name like concat('%', #{name}, '%')
     </select>
 
+    <insert id="bantchInsert">
+        insert into graph_node_template
+        (topic_id, node_template_name, node_template_description, create_time, update_time, is_library_flag, is_delete_flag,node_template_color)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.topicId}, #{item.nodeTemplateName}, #{item.nodeTemplateDescription}, now(), now(), #{item.isLibraryFlag}, '0',#{item.nodeTemplateColor})
+        </foreach>
+    </insert>
+
 </mapper>

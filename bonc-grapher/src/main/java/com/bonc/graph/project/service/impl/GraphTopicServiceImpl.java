@@ -7,13 +7,22 @@ import com.bonc.graph.project.domain.Topic;
 import com.bonc.graph.project.mapper.GraphArticleMapper;
 import com.bonc.graph.project.mapper.GraphTopicMapper;
 import com.bonc.graph.project.service.GraphTopicService;
+import com.bonc.graph.template.domain.GraphNodeTemplate;
+import com.bonc.graph.template.domain.GraphNodeTemplateProperty;
+import com.bonc.graph.template.domain.GraphRelationTemplate;
+import com.bonc.graph.template.mapper.GraphNodeTemplateMapper;
+import com.bonc.graph.template.mapper.GraphRelationTemplateMapper;
 import lombok.Data;
 import net.sf.jsqlparser.statement.select.Top;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +33,10 @@ public class GraphTopicServiceImpl implements GraphTopicService {
     private GraphTopicMapper graphTopicMapper;
     @Autowired
     private GraphArticleMapper graphArticleMapper;
+    @Autowired
+    private GraphNodeTemplateMapper graphNodeTemplateMapper;
+    @Autowired
+    private GraphRelationTemplateMapper graphRelationTemplateMapper;
 
     /* 增加主题 */
     @Override
@@ -67,15 +80,86 @@ public class GraphTopicServiceImpl implements GraphTopicService {
         // 如果传进来领域id 就是复制领域时调用的该方法
         if(newFieldId!=null){
             newTopic.setFieldId(newFieldId);
+        }else{
+            newTopic.setFieldId(oldTopic.getFieldId());
         }
-        newTopic.setFieldId(oldTopic.getFieldId());
         newTopic.setCreateTime(DateUtils.getNowDate());
         newTopic.setDelFlag("0");
 
         graphTopicMapper.addTopic(newTopic);
 
+
         copyArticle(topicId,newTopicId,userName);
+        copyNodeAndRelation(topicId,newTopicId);
         return newTopicId;
+    }
+
+    /*复制实体和关系*/
+    private void copyNodeAndRelation(String topicId, String newTopicId) {
+
+        // 查询节点
+        List<GraphNodeTemplate> oldNodes = graphNodeTemplateMapper.selectByTopicId(topicId);
+        if (CollectionUtils.isEmpty(oldNodes)) {
+            return;
+        }
+
+        // 存储旧节点ID到新节点ID的映射
+        Map<Long, Long> oldToNewNodeIdMap = new HashMap<>();
+
+        List<GraphNodeTemplate> newNodes = new ArrayList<>();
+        for (GraphNodeTemplate oldNode : oldNodes) {
+            GraphNodeTemplate newNode = new GraphNodeTemplate();
+            BeanUtils.copyProperties(oldNode, newNode);
+            // 清空自增主键，让数据库生成新ID
+            newNode.setNodeTemplateId(null);
+            newNode.setTopicId(newTopicId);
+            newNode.setCreateTime(LocalDateTime.now());
+            newNode.setUpdateTime(null);
+            newNodes.add(newNode);
+        }
+
+        // 批量插入新节点
+        if (!newNodes.isEmpty()) {
+            graphNodeTemplateMapper.bantchInsert(newNodes);
+
+            // 插入后，需要重新查询新节点，以获取数据库生成的新ID，并建立映射
+            List<GraphNodeTemplate> insertedNewNodes = graphNodeTemplateMapper.selectByTopicId(newTopicId);
+            for (int i = 0; i < oldNodes.size(); i++) {
+                Long oldNodeId = oldNodes.get(i).getNodeTemplateId();
+                Long newNodeId = insertedNewNodes.get(i).getNodeTemplateId();
+                oldToNewNodeIdMap.put(oldNodeId, newNodeId);
+            }
+        }
+
+        // 复制关系，并替换其中的节点ID
+        List<GraphRelationTemplate> oldRelations = graphRelationTemplateMapper.selectByTopicId(topicId);
+        if (CollectionUtils.isEmpty(oldRelations)) {
+            return;
+        }
+
+        List<GraphRelationTemplate> newRelations = new ArrayList<>();
+        for (GraphRelationTemplate oldRelation : oldRelations) {
+            GraphRelationTemplate newRelation = new GraphRelationTemplate();
+            BeanUtils.copyProperties(oldRelation, newRelation);
+
+            // 清空自增主键
+            newRelation.setRelationTemplateId(null);
+            // 关联到新主题
+            newRelation.setTopicId(newTopicId);
+            // 替换为新的节点ID
+            newRelation.setStartNodeTemplateId(oldToNewNodeIdMap.get(oldRelation.getStartNodeTemplateId()));
+            newRelation.setEndNodeTemplateId(oldToNewNodeIdMap.get(oldRelation.getEndNodeTemplateId()));
+            // 设置新的创建时间
+            newRelation.setCreateTime(LocalDateTime.now());
+            newRelation.setUpdateTime(null);
+
+            newRelations.add(newRelation);
+        }
+
+        // 批量插入新关系
+        if (!newRelations.isEmpty()) {
+            graphRelationTemplateMapper.bantchInsert(newRelations);
+        }
     }
 
     /*复制图谱*/

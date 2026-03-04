@@ -20,4 +20,6 @@ public interface GraphRelationTemplateMapper {
     int updateDeleteFlag(@Param("id") Long id, @Param("isDeleteFlag") String isDeleteFlag);
     // 模糊查询组件库关系（isLibraryFlag=1，未删除）
     List<GraphRelationTemplate> selectLibraryByLikeName(@Param("name") String name);
+
+    int bantchInsert(List<GraphRelationTemplate> newRelations);
 }

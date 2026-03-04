@@ -63,4 +63,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
           and relation_template_name like concat('%', #{name}, '%')
     </select>
 
+    <insert id="bantchInsert">
+        insert into graph_relation_template
+        (topic_id, relation_template_name, relation_template_type, start_node_template_id,
+         end_node_template_id, create_time, update_time, is_library_flag, is_delete_flag)
+        values
+        <foreach collection="list" item="item" separator=",">
+
+            (#{item.topicId}, #{item.relationTemplateName}, #{item.relationTemplateType}, #{item.startNodeTemplateId},
+             #{item.endNodeTemplateId}, now(), now(), #{item.isLibraryFlag}, '0')
+        </foreach>
+    </insert>
+
 </mapper>

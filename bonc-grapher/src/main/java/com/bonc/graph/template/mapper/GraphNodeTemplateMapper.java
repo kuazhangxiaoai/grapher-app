@@ -20,4 +20,6 @@ public interface GraphNodeTemplateMapper {
     int updateDeleteFlag(@Param("id") Long id, @Param("isDeleteFlag") String isDeleteFlag);
     // 模糊查询组件库节点（isLibraryFlag=1，未删除）
     List<GraphNodeTemplate> selectLibraryByLikeName(@Param("name") String name);
+
+    int bantchInsert(List<GraphNodeTemplate> newGraphNodeTemplates);
 }
