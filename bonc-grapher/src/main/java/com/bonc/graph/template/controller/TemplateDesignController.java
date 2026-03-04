@@ -49,7 +49,7 @@ public class TemplateDesignController {
             templateDesignService.saveNodeTemplate(dto);
             result.successResult();
         } catch (Exception e) {
-            result.failResult(e.getMessage());
+            result.setResult("0001",e.getMessage(),null);
             e.printStackTrace();
         }
         return result;
@@ -65,7 +65,7 @@ public class TemplateDesignController {
             templateDesignService.saveRelationTemplate(dto);
             result.successResult();
         } catch (Exception e) {
-            result.failResult(e.getMessage());
+            result.setResult("0001",e.getMessage(),null);
             e.printStackTrace();
         }
         return result;

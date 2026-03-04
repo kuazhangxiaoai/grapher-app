@@ -22,4 +22,18 @@ public interface GraphRelationTemplateMapper {
     List<GraphRelationTemplate> selectLibraryByLikeName(@Param("name") String name);
 
     int bantchInsert(List<GraphRelationTemplate> newRelations);
+
+    int updateById(GraphRelationTemplate template);
+
+    // 某专题下关系模板名称唯一性校验
+    int countTopicTemplateByName(
+            @Param("relationTemplateName") String relationTemplateName,
+            @Param("topicId") String topicId,
+            @Param("relationTemplateId") Long relationTemplateId
+    );
+    // 组件库关系模板名称唯一性校验
+    int countLibraryTemplateByName(
+            @Param("relationTemplateName") String relationTemplateName,
+            @Param("relationTemplateId") Long relationTemplateId
+    );
 }

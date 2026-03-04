@@ -22,4 +22,17 @@ public interface GraphNodeTemplateMapper {
     List<GraphNodeTemplate> selectLibraryByLikeName(@Param("name") String name);
 
     int bantchInsert(List<GraphNodeTemplate> newGraphNodeTemplates);
+
+    int updateById(GraphNodeTemplate template);
+
+    int countTopicTemplateByName(
+            @Param("nodeTemplateName") String nodeTemplateName,
+            @Param("topicId") String topicId,
+            @Param("nodeTemplateId") Long nodeTemplateId
+    );
+
+    int countLibraryTemplateByName(
+            @Param("nodeTemplateName") String nodeTemplateName,
+            @Param("nodeTemplateId") Long nodeTemplateId
+    );
 }

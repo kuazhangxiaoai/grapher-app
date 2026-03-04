@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,48 +64,78 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
     @Transactional(rollbackFor = Exception.class)
     public void saveNodeTemplate(NodeTemplateSaveDTO dto) {
 
+        // 1. 校验节点模板名称唯一性
+        checkNodeTemplateNameUnique(dto);
+
         List<GraphNodeTemplate> templates = new ArrayList<>();
-        GraphNodeTemplate mainTemplate = buildNodeTemplate(dto, dto.getTopicId(),"0");
+        GraphNodeTemplate mainTemplate = buildNodeTemplate(dto, dto.getTopicId(), "0");
         templates.add(mainTemplate);
 
         if ("1".equals(dto.getIsLibraryFlag())) {
-            // 处理组件库标识=1的情况：插入组件库数据，topicId为空，isLibraryFlag=1
+            // 组件库模板：topicId为空，isLibraryFlag=1
             GraphNodeTemplate libraryTemplate = buildNodeTemplate(dto, null, "1");
             templates.add(libraryTemplate);
         }
 
-        // 插入节点模版
-        templates.forEach(template -> {
-            nodeTemplateMapper.insert(template);
-            // 插入属性
+        // 2. 新增/修改逻辑处理
+        for (GraphNodeTemplate template : templates) {
+            if (dto.getNodeTemplateId() == null) {
+                // 新增：直接插入
+                nodeTemplateMapper.insert(template);
+            } else {
+                // 修改：先更新模板基础信息，再处理属性
+                template.setNodeTemplateId(dto.getNodeTemplateId());
+                nodeTemplateMapper.updateById(template);
+                // 逻辑删除原有属性（保证属性全量更新）
+                nodePropertyMapper.updateDeleteFlagByNodeTemplateId(dto.getNodeTemplateId(), "1");
+            }
+
+            // 3. 处理属性（新增/修改都需要重新插入属性）
             if (!CollectionUtils.isEmpty(dto.getProperties())) {
-                List<GraphNodeTemplateProperty> properties = buildNodeProperties(dto.getProperties(), template.getNodeTemplateId());
+                // 确定属性关联的模板ID（新增用插入后的ID，修改用传入的ID）
+                Long bindTemplateId = dto.getNodeTemplateId() == null ? template.getNodeTemplateId() : dto.getNodeTemplateId();
+                List<GraphNodeTemplateProperty> properties = buildNodeProperties(dto.getProperties(), bindTemplateId);
                 nodePropertyMapper.batchInsert(properties);
             }
-        });
+        }
     }
 
     // 3. 本体设计-关系模版保存接口
     @Transactional(rollbackFor = Exception.class)
     public void saveRelationTemplate(RelationTemplateSaveDTO dto) {
+        // 1. 校验关系模板名称唯一性（适配DTO字段）
+        checkRelationTemplateNameUnique(dto);
+
         List<GraphRelationTemplate> templates = new ArrayList<>();
         GraphRelationTemplate mainTemplate = buildRelationTemplate(dto, dto.getTopicId(), "0");
         templates.add(mainTemplate);
 
         if ("1".equals(dto.getIsLibraryFlag())) {
+            // 组件库模板：topicId为空，isLibraryFlag=1
             GraphRelationTemplate libraryTemplate = buildRelationTemplate(dto, null, "1");
             templates.add(libraryTemplate);
         }
 
-        // 插入关系模版
-        templates.forEach(template -> {
-            relationTemplateMapper.insert(template);
-            // 插入属性
+        // 2. 新增/修改逻辑处理
+        for (GraphRelationTemplate template : templates) {
+            if (dto.getRelationTemplateId() == null) {
+                // 新增：直接插入
+                relationTemplateMapper.insert(template);
+            } else {
+                // 修改：先更新模板基础信息，再处理属性
+                template.setRelationTemplateId(dto.getRelationTemplateId());
+                relationTemplateMapper.updateById(template);
+                // 逻辑删除原有属性
+                relationPropertyMapper.updateDeleteFlagByRelationTemplateId(dto.getRelationTemplateId(), "1");
+            }
+
+            // 3. 处理属性（新增/修改都需要重新插入属性）
             if (!CollectionUtils.isEmpty(dto.getProperties())) {
-                List<GraphRelationTemplateProperty> properties = buildRelationProperties(dto.getProperties(), template.getRelationTemplateId());
+                Long bindTemplateId = dto.getRelationTemplateId() == null ? template.getRelationTemplateId() : dto.getRelationTemplateId();
+                List<GraphRelationTemplateProperty> properties = buildRelationProperties(dto.getProperties(), bindTemplateId);
                 relationPropertyMapper.batchInsert(properties);
             }
-        });
+        }
     }
 
     // 4. 本体设计-节点模版删除接口（逻辑删除）
@@ -244,6 +275,76 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
         List<GraphNodeTemplateProperty> properties = nodePropertyMapper.selectByNodeTemplateId(nodeTemplateId);
         return properties;
     }
+
+    /**
+     * 校验节点模板名称唯一性
+     * 规则：
+     * 1. 组件库模板（isLibraryFlag=1）：需同时校验「组件库内」和「同专题普通模板」名称，两者都不能重复；
+     * 2. 普通模板（isLibraryFlag≠1）：仅校验「同专题普通模板」名称，不能重复；
+     * 3. 修改时排除自身ID，避免误判。
+     */
+    private void checkNodeTemplateNameUnique(NodeTemplateSaveDTO dto) {
+        String nodeTemplateName = dto.getNodeTemplateName();
+        String topicId = dto.getTopicId();
+        Long nodeTemplateId = dto.getNodeTemplateId();
+
+
+        // 1. 校验普通模板（同专题）名称是否重复（所有场景都需要先校验普通模板）
+        int topicTemplateCount = nodeTemplateMapper.countTopicTemplateByName(
+                nodeTemplateName,
+                topicId,
+                nodeTemplateId
+        );
+        if (topicTemplateCount > 0) {
+            throw new ValidationException("同专题下已存在名称为【" + nodeTemplateName + "】的节点模板，请勿重复创建");
+        }
+
+        // 2. 组件库模板额外校验组件库内名称是否重复
+        if ("1".equals(dto.getIsLibraryFlag())) {
+            int libraryTemplateCount = nodeTemplateMapper.countLibraryTemplateByName(
+                    nodeTemplateName,
+                    nodeTemplateId
+            );
+            if (libraryTemplateCount > 0) {
+                throw new ValidationException("组件库中已存在名称为【" + nodeTemplateName + "】的节点模板，请勿重复创建");
+            }
+        }
+    }
+
+    /**
+     * 校验关系模板名称唯一性
+     * 规则：
+     * 1. 组件库模板（isLibraryFlag=1）：需同时校验「组件库内」和「同专题普通模板」名称，两者都不能重复；
+     * 2. 普通模板（isLibraryFlag≠1）：仅校验「同专题普通模板」名称，不能重复；
+     * 3. 修改时排除自身ID，避免误判。
+     */
+    private void checkRelationTemplateNameUnique(RelationTemplateSaveDTO dto) {
+        String relationTemplateName = dto.getRelationTemplateName();
+        Long relationTemplateId = dto.getRelationTemplateId();
+        String topicId = dto.getTopicId();
+
+        // 1. 校验普通模板（同专题）名称是否重复
+        int topicTemplateCount = relationTemplateMapper.countTopicTemplateByName(
+                relationTemplateName,
+                topicId,
+                relationTemplateId
+        );
+        if (topicTemplateCount > 0) {
+            throw new ValidationException("同专题下已存在名称为【" + relationTemplateName + "】的关系模板，请勿重复创建");
+        }
+
+        // 2. 组件库模板额外校验组件库内名称是否重复
+        if ("1".equals(dto.getIsLibraryFlag())) {
+            int libraryTemplateCount = relationTemplateMapper.countLibraryTemplateByName(
+                    relationTemplateName,
+                    relationTemplateId
+            );
+            if (libraryTemplateCount > 0) {
+                throw new ValidationException("组件库中已存在名称为【" + relationTemplateName + "】的关系模板，请勿重复创建");
+            }
+        }
+    }
+
 
 
     // ========== 私有构建方法 ==========

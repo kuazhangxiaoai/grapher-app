@@ -59,4 +59,41 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </foreach>
     </insert>
 
+    <update id="updateById">
+        update graph_node_template
+        <set>
+            <!-- 动态更新字段，仅修改非空/有变化的字段 -->
+            <if test="nodeTemplateName != null">node_template_name = #{nodeTemplateName},</if>
+            <if test="nodeTemplateDescription != null">node_template_description = #{nodeTemplateDescription},</if>
+            <if test="isLibraryFlag != null">is_library_flag = #{isLibraryFlag},</if>
+            <if test="nodeTemplateColor != null">node_template_color = #{nodeTemplateColor},</if>
+            update_time = now()
+        </set>
+        where node_template_id = #{nodeTemplateId}
+    </update>
+
+    <!-- 补充：普通模板（非组件库）名称唯一性校验（适配业务逻辑） -->
+    <select id="countTopicTemplateByName" resultType="int">
+        select count(1) from graph_node_template
+        where node_template_name = #{nodeTemplateName}
+        and topic_id = #{topicId}
+        and is_library_flag = '0'
+        and is_delete_flag = '0'
+        <if test="nodeTemplateId != null">
+            and node_template_id != #{nodeTemplateId}
+        </if>
+    </select>
+
+    <!-- 补充：组件库模板名称唯一性校验（适配业务逻辑） -->
+    <select id="countLibraryTemplateByName" resultType="int">
+        select count(1) from graph_node_template
+        where node_template_name = #{nodeTemplateName}
+        and is_library_flag = '1'
+        and is_delete_flag = '0'
+        <if test="nodeTemplateId != null">
+            and node_template_id != #{nodeTemplateId}
+        </if>
+    </select>
+
+
 </mapper>

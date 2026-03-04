@@ -75,4 +75,38 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </foreach>
     </insert>
 
+    <update id="updateById">
+        update graph_relation_template
+        <set>
+            <if test="relationTemplateName != null">relation_template_name = #{relationTemplateName},</if>
+            <if test="relationTemplateType != null">relation_template_type = #{relationTemplateType},</if>
+            <if test="isLibraryFlag != null">is_library_flag = #{isLibraryFlag},</if>
+            update_time = now()
+        </set>
+        where relation_template_id = #{relationTemplateId}
+    </update>
+
+    <!--某专题下关系模板名称唯一性校验 -->
+    <select id="countTopicTemplateByName" resultType="int">
+        select count(1) from graph_relation_template
+        where relation_template_name = #{relationTemplateName}
+        and topic_id = #{topicId}
+        and is_library_flag = '0'
+        and is_delete_flag = '0'
+        <if test="relationTemplateId != null">
+            and relation_template_id != #{relationTemplateId}
+        </if>
+    </select>
+
+    <!-- 组件库关系模板名称唯一性校验 -->
+    <select id="countLibraryTemplateByName" resultType="int">
+        select count(1) from graph_relation_template
+        where relation_template_name = #{relationTemplateName}
+        and is_library_flag = '1'
+        and is_delete_flag = '0'
+        <if test="relationTemplateId != null">
+            and relation_template_id != #{relationTemplateId}
+        </if>
+    </select>
+
 </mapper>
