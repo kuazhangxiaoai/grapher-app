@@ -39,11 +39,11 @@ public class GraphNodeService {
         // 1. 构建节点和属性
         for (GraphSaveDTO.NodeDTO nodeDTO : nodeDTOList) {
             // 生成节点Hash
-            String nodeHash = HashUtil.generateNodeHash(nodeDTO.getNodeName(), nodeDTO.getNodeColor(), nodeDTO.getProperties());
+//            String nodeHash = HashUtil.generateNodeHash(nodeDTO.getNodeName(), nodeDTO.getNodeColor(), nodeDTO.getProperties());
 
             // 构建节点
             GraphNode node = new GraphNode();
-            node.setNodeHash(nodeHash);
+            node.setNodeHash(nodeDTO.getNodeHash());
             node.setNodeName(nodeDTO.getNodeName());
             node.setNodeDescription(nodeDTO.getNodeDescription());
             node.setNodeColor(nodeDTO.getNodeColor());
