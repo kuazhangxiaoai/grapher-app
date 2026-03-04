@@ -44,7 +44,28 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <select id="selectDistinctByArticleId" resultMap="BaseResultMap">
-        SELECT DISTINCT ON (relation_hash) * FROM graph_relation WHERE article_id = #{articleId}
+        SELECT
+            t.relation_id,
+            t.relation_hash,
+            t.relation_name,
+            t.relation_type,
+            t.relation_trigger,
+            t.start_node_hash,
+            t.end_node_hash,
+            t.create_time,
+            t.update_time,
+            t.field_id,
+            t.topic_id,
+            t.article_id,
+            t.sequence_id
+        FROM (
+                 SELECT
+                     *,
+                     ROW_NUMBER() OVER (PARTITION BY relation_hash ORDER BY create_time ASC) AS rn
+                 FROM graph_relation
+                 WHERE article_id = #{articleId}
+             ) t
+        WHERE t.rn = 1
     </select>
 
 </mapper>
