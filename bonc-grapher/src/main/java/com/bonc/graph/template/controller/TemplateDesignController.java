@@ -1,5 +1,7 @@
 package com.bonc.graph.template.controller;
 
+import com.bonc.graph.template.domain.GraphNodeTemplate;
+import com.bonc.graph.template.domain.GraphNodeTemplateProperty;
 import com.bonc.graph.template.dto.AddToModelDTO;
 import com.bonc.graph.template.dto.NodeTemplateSaveDTO;
 import com.bonc.graph.template.dto.RelationTemplateSaveDTO;
@@ -10,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -135,6 +138,38 @@ public class TemplateDesignController {
         try {
             templateDesignService.addToModel(dto);
             result.successResult();
+        } catch (Exception e) {
+            result.failResult(e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    // 8. 根据topicId查询节点列表接口
+    @GetMapping("/queryNodeTemplate")
+    public Result queryNodeTemplate(@RequestParam String topicId) {
+        log.info("节点/关系模版查询接口:/graph_api/v1/template/queryNodeTemplate");
+        log.info("topicId:"+ topicId);
+        Result result = new Result();
+        try {
+            List<GraphNodeTemplate> resList= templateDesignService.queryNodeTemplate(topicId);
+            result.successResult(resList);
+        } catch (Exception e) {
+            result.failResult(e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    // 9. 根据nodeTemplateId查询节点属性列表接口
+    @GetMapping("/queryNodeTemplateProperties")
+    public Result queryNodeTemplateProperties(@RequestParam Long nodeTemplateId) {
+        log.info("节点/关系模版查询接口:/graph_api/v1/template/queryNodeTemplateProperties");
+        log.info("nodeTemplateId:"+ nodeTemplateId);
+        Result result = new Result();
+        try {
+            List<GraphNodeTemplateProperty> resList = templateDesignService.queryNodeTemplateProperties(nodeTemplateId);
+            result.successResult(resList);
         } catch (Exception e) {
             result.failResult(e.getMessage());
             e.printStackTrace();

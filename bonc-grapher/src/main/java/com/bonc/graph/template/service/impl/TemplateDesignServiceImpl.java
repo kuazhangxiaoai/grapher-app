@@ -231,6 +231,21 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
         }
     }
 
+    // 8. 图谱构建-节点模版查询接口
+    public List<GraphNodeTemplate> queryNodeTemplate(String topicId) {
+        // 查询节点模版
+        List<GraphNodeTemplate> nodeTemplates = nodeTemplateMapper.selectByTopicId(topicId);
+        return nodeTemplates;
+    }
+
+    // 9. 图谱构建-节点模版属性查询接口
+    public List<GraphNodeTemplateProperty> queryNodeTemplateProperties(Long nodeTemplateId) {
+        // 查询节点模版属性
+        List<GraphNodeTemplateProperty> properties = nodePropertyMapper.selectByNodeTemplateId(nodeTemplateId);
+        return properties;
+    }
+
+
     // ========== 私有构建方法 ==========
     private GraphNodeTemplate buildNodeTemplate(NodeTemplateSaveDTO dto, String topicId, String isLibraryFlag) {
         GraphNodeTemplate template = new GraphNodeTemplate();

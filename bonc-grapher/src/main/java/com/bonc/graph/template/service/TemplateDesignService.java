@@ -1,10 +1,13 @@
 package com.bonc.graph.template.service;
 
+import com.bonc.graph.template.domain.GraphNodeTemplate;
+import com.bonc.graph.template.domain.GraphNodeTemplateProperty;
 import com.bonc.graph.template.dto.AddToModelDTO;
 import com.bonc.graph.template.dto.NodeTemplateSaveDTO;
 import com.bonc.graph.template.dto.RelationTemplateSaveDTO;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
 import java.util.Map;
 
 public interface TemplateDesignService {
@@ -22,4 +25,8 @@ public interface TemplateDesignService {
     Map<String, Object> queryLibraryTemplate(String templateName);
 
     void addToModel(AddToModelDTO dto);
+
+    List<GraphNodeTemplate> queryNodeTemplate(@Param("topicId") String topicId);
+
+    List<GraphNodeTemplateProperty> queryNodeTemplateProperties(@Param("nodeTemplateId") Long nodeTemplateId);
 }
