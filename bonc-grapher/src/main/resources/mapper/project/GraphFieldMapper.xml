@@ -13,6 +13,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
     </resultMap>
 
+    <!--    领域添加-->
     <insert id="addField" parameterType="Field">
         insert into graph_field
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -35,6 +36,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
     </insert>
 
+    <!--    根据条件查找领域-->
     <select id="selectFieldByCondition" resultMap="FieldMap">
         select field_id ,field_name from graph_field
         <where >
@@ -46,7 +48,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
 
     </select>
-
+    <!--删除领域-->
     <update id="deleteByFieldId" >
         update graph_field
         <trim prefix="SET" suffixOverrides=",">
@@ -58,10 +60,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
 
+    <!--   根据领域id查找-->
     <select id="selectByFieldId" resultMap="FieldMap">
         select * from graph_field
         where del_flag = '0' and field_id = #{fieldId}
     </select>
-
+    <!--    领域名称唯一性校验-->
+    <select id="checkField" resultType="int">
+        select count(1) from graph_field
+        where field_name = #{fieldName}
+        and del_flag = '0'
+    </select>
 
 </mapper>

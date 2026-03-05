@@ -46,4 +46,6 @@ public interface GraphTopicMapper {
      * 根据topicId查询专题信息
      */
     Topic selectByTopicId(@Param("topicId") String topicId);
+   /*根据专题名称查询该领域下是否有相同名字的专题*/
+    int checkTopic(@Param("topicName") String topicName, @Param("fieldId") String fieldId);
 }

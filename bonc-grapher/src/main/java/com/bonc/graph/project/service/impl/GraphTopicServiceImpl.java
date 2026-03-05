@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,12 +42,23 @@ public class GraphTopicServiceImpl implements GraphTopicService {
     /* 增加主题 */
     @Override
     public int addTopic(Topic topic) {
+        checkTopic(topic);
         String uuid = UUID.randomUUID().toString();
         topic.setTopicId(uuid);
         topic.setCreateTime(DateUtils.getNowDate());
         topic.setDelFlag("0");
         return graphTopicMapper.addTopic(topic);
     }
+
+    /*检查该领域下是否有相同名字的专题*/
+    private void checkTopic(Topic topic) {
+        int graphTopicCount = graphTopicMapper.checkTopic(topic.getTopicName(),topic.getFieldId());
+        if(graphTopicCount>0){
+            throw new ValidationException("该领域已存在名称为【" + topic.getTopicName() + "】的专题，请勿重复创建");
+
+        }
+    }
+
 
     /* 根据条件查询*/
     @Override

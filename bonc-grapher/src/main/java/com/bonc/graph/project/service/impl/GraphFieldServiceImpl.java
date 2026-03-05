@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,11 +30,21 @@ public class GraphFieldServiceImpl implements GraphFieldService {
     /* 增加领域 */
     @Override
     public int addField(Field field) {
+        checkField(field.getFieldName());
         String uuid = UUID.randomUUID().toString();
         field.setFieldId(uuid);
         field.setCreateTime(DateUtils.getNowDate());
         field.setDelFlag("0");
         return graphFieldMapper.addField(field);
+    }
+
+    /*检查是否有重复的领域*/
+    private void checkField(String fieldName) {
+        int graphFieldCount= graphFieldMapper.checkField(fieldName);
+
+        if(graphFieldCount>0){
+            throw new ValidationException("已存在名称为【" + fieldName + "】的领域，请勿重复创建");
+        }
     }
 
     /* 查找领域 */
@@ -53,6 +64,7 @@ public class GraphFieldServiceImpl implements GraphFieldService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String copyField(String fieldId, String fieldName, String userName) {
+
         // 先复制领域
         String fieldUuid = UUID.randomUUID().toString();
         Field field = graphFieldMapper.selectByFieldId(fieldId);

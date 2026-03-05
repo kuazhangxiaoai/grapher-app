@@ -30,7 +30,7 @@ public class GraphFieldController {
      * @return
      */
     @PostMapping("/addField")
-    public Result addField(@RequestBody Field field, @AuthenticationPrincipal PPTLoginUser loginUser) {
+    public Result addField(@RequestBody Field field,@AuthenticationPrincipal PPTLoginUser loginUser) {
         Result result = new Result();
         try {
             GraphUser user = loginUser.getUser();
@@ -38,7 +38,7 @@ public class GraphFieldController {
             field.setCreateBy(userName);
             result.successResult(graphFieldService.addField(field));
         } catch (Exception e) {
-            result.failResult(e.getMessage());
+            result.setResult("0001",e.getMessage(),null);
             e.printStackTrace();
         }
         return result;

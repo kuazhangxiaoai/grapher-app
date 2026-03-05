@@ -38,7 +38,7 @@ public class GraphTopicController {
             topic.setCreateBy(userName);
             result.successResult(graphTopicService.addTopic(topic));
         }catch (Exception e){
-            result.failResult(e.getMessage());
+            result.setResult("0001",e.getMessage(),null);
             e.printStackTrace();
         }
         return result;
@@ -86,6 +86,7 @@ public class GraphTopicController {
         return result;
     }
 
+    /*复制专题*/
     @GetMapping("/copyTopic")
     public Result copyTopic(@RequestParam("topicId") String topicId,
                             @RequestParam(required = false, value = "topicName") String topicName,@AuthenticationPrincipal PPTLoginUser loginUser){

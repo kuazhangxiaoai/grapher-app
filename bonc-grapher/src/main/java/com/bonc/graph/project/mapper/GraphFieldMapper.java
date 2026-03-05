@@ -38,4 +38,10 @@ public interface GraphFieldMapper {
      */
     Field selectByFieldId(String fieldId);
 
+    /**
+     * 根据名字查找领域
+     * @param fieldName
+     * @return
+     */
+    int checkField(String fieldName);
 }

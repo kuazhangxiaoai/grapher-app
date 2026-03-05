@@ -102,7 +102,12 @@
     </insert>
 
     <select id="selectByTopicId" resultMap="TopicMap">
-        SELECT * FROM graph_topic WHERE topic_id = #{topicId}
+        SELECT * FROM graph_topic WHERE topic_id = #{topicId} and del_flag = '0'
     </select>
 
+
+    <select id="checkTopic" resultType="int">
+        SELECT count(1) FROM graph_topic
+        where topic_name = #{topicName} and field_id = #{fieldId} and del_flag = '0'
+    </select>
 </mapper>
