@@ -57,9 +57,14 @@ public class GraphFieldServiceImpl implements GraphFieldService {
     public int deleteByFieldId(Field field) {
         field.setUpdateTime(DateUtils.getNowDate());
         field.setDelFlag("2");
+        List<Topic> topics = graphTopicMapper.selectTopicByFieldId(field.getFieldId());
+        if(topics.size()>0){
+            for(Topic topic:topics){
+                graphTopicService.deleteBytopicId(topic);
+            }
+        }
         return graphFieldMapper.deleteByFieldId(field);
     }
-
     /*复制领域*/
     @Override
     @Transactional(rollbackFor = Exception.class)

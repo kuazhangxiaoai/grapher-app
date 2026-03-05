@@ -6,12 +6,16 @@ import com.bonc.graph.project.domain.Article;
 import com.bonc.graph.project.domain.Topic;
 import com.bonc.graph.project.mapper.GraphArticleMapper;
 import com.bonc.graph.project.mapper.GraphTopicMapper;
+import com.bonc.graph.project.service.GraphArticleService;
 import com.bonc.graph.project.service.GraphTopicService;
 import com.bonc.graph.template.domain.GraphNodeTemplate;
 import com.bonc.graph.template.domain.GraphNodeTemplateProperty;
 import com.bonc.graph.template.domain.GraphRelationTemplate;
+import com.bonc.graph.template.domain.GraphRelationTemplateProperty;
 import com.bonc.graph.template.mapper.GraphNodeTemplateMapper;
+import com.bonc.graph.template.mapper.GraphNodeTemplatePropertyMapper;
 import com.bonc.graph.template.mapper.GraphRelationTemplateMapper;
+import com.bonc.graph.template.mapper.GraphRelationTemplatePropertyMapper;
 import lombok.Data;
 import net.sf.jsqlparser.statement.select.Top;
 import org.springframework.beans.BeanUtils;
@@ -38,6 +42,12 @@ public class GraphTopicServiceImpl implements GraphTopicService {
     private GraphNodeTemplateMapper graphNodeTemplateMapper;
     @Autowired
     private GraphRelationTemplateMapper graphRelationTemplateMapper;
+    @Autowired
+    private GraphArticleService graphArticleService;
+    @Autowired
+    private GraphNodeTemplatePropertyMapper graphNodeTemplatePropertyMapper;
+    @Autowired
+    private GraphRelationTemplatePropertyMapper graphRelationTemplatePropertyMapper;
 
     /* 增加主题 */
     @Override
@@ -70,8 +80,37 @@ public class GraphTopicServiceImpl implements GraphTopicService {
     public int deleteBytopicId(Topic topic) {
         topic.setUpdateTime(DateUtils.getNowDate());
         topic.setDelFlag("2");
+        //查找该主题下的所有article
+        List<Article> articles = graphArticleMapper.selectArticlesByTopicId(topic.getTopicId());
+        if(articles.size()>0){
+            for(Article article:articles){
+                graphArticleService.deleteArticle(article);
+            }
+        }
+        //查找该主题下的所有节点模板并删除
+        List<GraphNodeTemplate> graphNodeTemplates =  graphNodeTemplateMapper.selectByTopicId(topic.getTopicId());
+        if(graphNodeTemplates.size()>0){
+            for(GraphNodeTemplate graphNodeTemplate:graphNodeTemplates){
+                //删除节点模板
+                graphNodeTemplateMapper.updateDeleteFlag(graphNodeTemplate.getNodeTemplateId(),"1");
+                //删除节点模板属性
+                graphNodeTemplatePropertyMapper.updateDeleteFlagByNodeTemplateId(graphNodeTemplate.getNodeTemplateId(),"1");
+            }
+        }
+        //查找该主题下的所有关系模板并删除
+        List<GraphRelationTemplate> graphRelationTemplates = graphRelationTemplateMapper.selectByTopicId(topic.getTopicId());
+        if(graphRelationTemplates.size()>0){
+            for(GraphRelationTemplate graphRelationTemplate:graphRelationTemplates){
+                //删除关系模板
+                graphRelationTemplateMapper.updateDeleteFlag(graphRelationTemplate.getRelationTemplateId(),"1");
+                //删除关系模板属性
+                graphRelationTemplatePropertyMapper.updateDeleteFlagByRelationTemplateId(graphRelationTemplate.getRelationTemplateId(),"1");
+            }
+        }
+
         return graphTopicMapper.deleteBytopicId(topic);
     }
+
 
     /*复制主题*/
     @Override

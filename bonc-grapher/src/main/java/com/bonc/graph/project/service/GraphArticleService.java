@@ -16,7 +16,9 @@ public interface GraphArticleService {
     /* 删除图谱 */
     int deleteArticle(Article article);
 
+    /* 根据条件新增图谱 */
     List<Map<String,Object>> selectArticle(String condition,String topicId);
 
+    /* 查找文件的url*/
     String getFileUrl(String articleId);
 }
