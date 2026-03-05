@@ -1,9 +1,9 @@
 package com.bonc.graph.sequence.controller;
 
 import com.bonc.common.utils.StringUtils;
-import com.bonc.graph.sequence.domain.GraphSequence;
 import com.bonc.graph.sequence.dto.GraphResponseDTO;
 import com.bonc.graph.sequence.dto.GraphSaveDTO;
+import com.bonc.graph.sequence.dto.GraphSequenceDTO;
 import com.bonc.graph.sequence.service.GraphCoreService;
 import com.bonc.graph.sequence.service.GraphSequenceService;
 import com.bonc.graph.user.domain.Result;
@@ -57,11 +57,11 @@ public class GraphController {
         log.info("图谱构建-段落列表查询接口:/graph_api/v1/sequence/getSequenceList, articleId:{}", articleId);
         Result result = new Result();
         try {
-            List<GraphSequence> sequenceList = graphSequenceService.getSequenceListByArticleId(articleId);
+            List<GraphSequenceDTO> sequenceList = graphSequenceService.getSequenceListByArticleId(articleId);
             result.successResult(sequenceList);
         } catch (Exception e) {
             result.failResult(e.getMessage());
-            log.error("段落列表查询失败", e);
+            log.error("段落列表查询失败, articleId:{}", articleId, e);
         }
         return result;
     }

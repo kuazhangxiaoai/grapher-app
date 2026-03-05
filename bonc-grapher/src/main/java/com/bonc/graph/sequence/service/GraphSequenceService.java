@@ -2,15 +2,20 @@ package com.bonc.graph.sequence.service;
 
 import com.bonc.graph.sequence.domain.GraphSequence;
 import com.bonc.graph.sequence.domain.GraphSequencePosition;
+import com.bonc.graph.sequence.dto.GraphSequenceDTO;
 import com.bonc.graph.sequence.mapper.GraphSequenceMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class GraphSequenceService {
@@ -21,19 +26,39 @@ public class GraphSequenceService {
     private GraphSequencePositionService graphSequencePositionService;
 
     /**
-     * 根据articleId查询段落列表（包含关联的位置信息）
+     * 根据articleId查询段落列表
      */
-    public List<GraphSequence> getSequenceListByArticleId(String articleId) {
-        // 1. 查询段落主表数据
+    public List<GraphSequenceDTO> getSequenceListByArticleId(String articleId) {
+        // 1. 查询段落主表数据（PostgreSQL适配）
         List<GraphSequence> sequenceList = graphSequenceMapper.selectByArticleId(articleId);
-        // 2. 为每个段落组装位置信息列表
-        if (!CollectionUtils.isEmpty(sequenceList)) {
-            for (GraphSequence sequence : sequenceList) {
-                List<GraphSequencePosition> positionList = graphSequencePositionService.getPositionListBySequenceId(sequence.getSequenceId());
-                sequence.setSequencePositionList(positionList); // 直接设置到实体中
-            }
+
+        // 2. 空值处理
+        if (CollectionUtils.isEmpty(sequenceList)) {
+            return Collections.emptyList();
         }
-        return sequenceList;
+
+        // 3. 转换为DTO列表
+        return sequenceList.stream().map(sequence -> {
+            GraphSequenceDTO dto = new GraphSequenceDTO();
+            BeanUtils.copyProperties(sequence, dto);
+
+            // 4. 处理位置信息列表转换
+            List<GraphSequencePosition> positionList = graphSequencePositionService.getPositionListBySequenceId(sequence.getSequenceId());
+            if (!CollectionUtils.isEmpty(positionList)) {
+                List<GraphSequenceDTO.SequencePosition> positionDTOList = positionList.stream()
+                        .map(position -> {
+                            GraphSequenceDTO.SequencePosition positionDTO = new GraphSequenceDTO.SequencePosition();
+                            BeanUtils.copyProperties(position, positionDTO);
+                            return positionDTO;
+                        })
+                        .collect(Collectors.toList());
+                dto.setSequencePositionList(positionDTOList);
+            } else {
+                dto.setSequencePositionList(new ArrayList<>());
+            }
+
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     /**
