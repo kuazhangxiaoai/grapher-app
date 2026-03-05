@@ -39,7 +39,7 @@ public class GraphController {
                 throw new IllegalArgumentException("内容不能为空");
             }
             // 调用分词工具类处理
-            List<String> segmentResult = HanLPSegmentUtil.segmentParagraph(sequenceContent);
+            List<Map<String, Object>> segmentResult = HanLPSegmentUtil.segmentParagraphWithOffset(sequenceContent);
             result.successResult(segmentResult);
         } catch (Exception e) {
             result.failResult(e.getMessage());
