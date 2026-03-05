@@ -6,10 +6,13 @@ import com.bonc.graph.project.mapper.GraphArticleMapper;
 import com.bonc.graph.project.mapper.GraphTopicMapper;
 import com.bonc.graph.sequence.domain.GraphNode;
 import com.bonc.graph.sequence.domain.GraphRelation;
+import com.bonc.graph.sequence.domain.GraphSequence;
 import com.bonc.graph.sequence.dto.GraphResponseDTO;
 import com.bonc.graph.sequence.dto.GraphSaveDTO;
+import com.bonc.graph.sequence.mapper.GraphSequenceMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -19,15 +22,20 @@ import java.util.stream.Collectors;
 public class GraphCoreService {
 
     @Resource
+    private GraphArticleMapper graphArticleMapper;
+    @Resource
+    private GraphTopicMapper graphTopicMapper;
+    @Resource
     private GraphSequenceService graphSequenceService;
+    @Resource
+    private GraphSequenceMapper graphSequenceMapper;
+    @Resource
+    private GraphSequencePositionService graphSequencePositionService;
     @Resource
     private GraphNodeService graphNodeService;
     @Resource
     private GraphRelationService graphRelationService;
-    @Resource
-    private GraphArticleMapper graphArticleMapper;
-    @Resource
-    private GraphTopicMapper graphTopicMapper;
+
     /**
      * 图谱保存提交
      */
@@ -36,45 +44,48 @@ public class GraphCoreService {
         String articleId = saveDTO.getArticleId();
         String sequenceId = saveDTO.getSequenceId();
 
-        // 1. 查询文章获取topicId
+        // 1. 校验文章存在
         Article article = graphArticleMapper.selectByArticleId(articleId);
         if (article == null) {
             throw new RuntimeException("文章不存在，articleId：" + articleId);
         }
         String topicId = article.getTopicId();
 
-        // 2. 查询专题获取fieldId
+        // 2. 校验专题存在
         Topic topic = graphTopicMapper.selectByTopicId(topicId);
         if (topic == null) {
             throw new RuntimeException("专题不存在，topicId：" + topicId);
         }
         String fieldId = topic.getFieldId();
 
-
-        // 1. 新增：生成sequenceId并插入段落表
+        // 3. 新增段落
         if (sequenceId == null || sequenceId.isEmpty()) {
-            sequenceId = graphSequenceService.createSequence(
-                    articleId,
-                    saveDTO.getSequenceContent(),
-                    saveDTO.getSequenceX0(),
-                    saveDTO.getSequenceY0(),
-                    saveDTO.getSequenceX1(),
-                    saveDTO.getSequenceY1(),
-                    saveDTO.getSequencePage()
-            );
+            sequenceId = graphSequenceService.createSequence(articleId, saveDTO.getSequenceContent());
+            // 批量插入位置信息
+            graphSequencePositionService.batchCreateSequencePosition(sequenceId, saveDTO.getSequencePositionList());
         } else {
-            // 2. 修改：删除原有节点、关系及属性
+            // 4. 修改段落：先校验段落存在
+            GraphSequence sequence = graphSequenceMapper.selectBySequenceId(sequenceId);
+            if (sequence == null) {
+                throw new RuntimeException("段落不存在，sequenceId：" + sequenceId);
+            }
+            // 删除旧数据
             graphNodeService.deleteNodesBySequenceId(sequenceId);
             graphRelationService.deleteRelationsBySequenceId(sequenceId);
-            // 更新段落更新时间
+//            graphSequencePositionService.deletePositionBySequenceId(sequenceId);
+//            // 重新插入位置信息
+//            graphSequencePositionService.batchCreateSequencePosition(sequenceId, saveDTO.getSequencePositionList());
+            // 更新主表时间
             graphSequenceService.updateSequenceUpdateTime(sequenceId);
         }
 
-        // 3. 保存节点及属性
-        graphNodeService.saveNodes(saveDTO.getGraphNode(), sequenceId, articleId, topicId, fieldId);
-
-        // 4. 保存关系及属性
-        graphRelationService.saveRelations(saveDTO.getGraphRelation(), sequenceId, articleId, topicId, fieldId);
+        // 5. 保存节点和关系
+        if (!CollectionUtils.isEmpty(saveDTO.getGraphNode())) {
+            graphNodeService.saveNodes(saveDTO.getGraphNode(), sequenceId, articleId, topicId, fieldId);
+        }
+        if (!CollectionUtils.isEmpty(saveDTO.getGraphRelation())) {
+            graphRelationService.saveRelations(saveDTO.getGraphRelation(), sequenceId, articleId, topicId, fieldId);
+        }
     }
 
     /**

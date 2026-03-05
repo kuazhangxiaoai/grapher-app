@@ -1,5 +1,6 @@
 package com.bonc.graph.sequence.dto;
 
+import com.bonc.graph.sequence.domain.GraphSequencePosition;
 import lombok.Data;
 
 import java.util.List;
@@ -12,13 +13,10 @@ public class GraphSaveDTO {
     private String articleId;
     private String sequenceId; // 为空则新增，不为空则修改
 
-    //段落相关字段（前端上送）
+    //段落内容
     private String sequenceContent;
-    private Integer sequenceX0;
-    private Integer sequenceY0;
-    private Integer sequenceX1;
-    private Integer sequenceY1;
-    private Integer sequencePage;
+    // 段落位置信息列表
+    private List<GraphSequencePosition> sequencePositionList;
 
     // 节点列表
     private List<NodeDTO> graphNode;

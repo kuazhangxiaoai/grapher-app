@@ -15,7 +15,12 @@ public interface GraphSequenceMapper {
     List<GraphSequence> selectByArticleId(@Param("articleId") String articleId);
 
     /**
-     * 新增段落
+     * 根据sequenceId查询段落
+     */
+    GraphSequence selectBySequenceId(@Param("sequenceId") String sequenceId);
+
+    /**
+     * 插入段落主表
      */
     int insert(GraphSequence sequence);
 
@@ -23,4 +28,9 @@ public interface GraphSequenceMapper {
      * 更新段落更新时间
      */
     int updateUpdateTime(@Param("sequenceId") String sequenceId, @Param("updateTime") LocalDateTime updateTime);
+
+    /**
+     * 根据sequenceId删除段落
+     */
+    int deleteBySequenceId(@Param("sequenceId") String sequenceId);
 }

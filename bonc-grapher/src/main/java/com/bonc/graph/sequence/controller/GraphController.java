@@ -50,20 +50,18 @@ public class GraphController {
 
 
     /**
-     * 2. 图谱构建-段落列表查询接口
-     * @param articleId 文章ID
-     * @return 段落列表
+     * 段落列表查询接口
      */
     @GetMapping("/getSequenceList")
     public Result getSequenceList(@RequestParam String articleId) {
-        log.info("图谱构建-段落列表查询接口:/graph_api/v1/sequence/getSequenceList");
+        log.info("图谱构建-段落列表查询接口:/graph_api/v1/sequence/getSequenceList, articleId:{}", articleId);
         Result result = new Result();
         try {
-            List<GraphSequence> resList = graphSequenceService.getSequenceListByArticleId(articleId);
-            result.successResult(resList);
-        }catch (Exception e){
+            List<GraphSequence> sequenceList = graphSequenceService.getSequenceListByArticleId(articleId);
+            result.successResult(sequenceList);
+        } catch (Exception e) {
             result.failResult(e.getMessage());
-            e.printStackTrace();
+            log.error("段落列表查询失败", e);
         }
         return result;
     }

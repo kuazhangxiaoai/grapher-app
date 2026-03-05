@@ -1,8 +1,11 @@
 package com.bonc.graph.sequence.service;
 
 import com.bonc.graph.sequence.domain.GraphSequence;
+import com.bonc.graph.sequence.domain.GraphSequencePosition;
 import com.bonc.graph.sequence.mapper.GraphSequenceMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -14,46 +17,38 @@ public class GraphSequenceService {
 
     @Resource
     private GraphSequenceMapper graphSequenceMapper;
+    @Resource
+    private GraphSequencePositionService graphSequencePositionService;
 
     /**
-     * 根据articleId查询段落列表
+     * 根据articleId查询段落列表（包含关联的位置信息）
      */
     public List<GraphSequence> getSequenceListByArticleId(String articleId) {
-        return graphSequenceMapper.selectByArticleId(articleId);
+        // 1. 查询段落主表数据
+        List<GraphSequence> sequenceList = graphSequenceMapper.selectByArticleId(articleId);
+        // 2. 为每个段落组装位置信息列表
+        if (!CollectionUtils.isEmpty(sequenceList)) {
+            for (GraphSequence sequence : sequenceList) {
+                List<GraphSequencePosition> positionList = graphSequencePositionService.getPositionListBySequenceId(sequence.getSequenceId());
+                sequence.setSequencePositionList(positionList); // 直接设置到实体中
+            }
+        }
+        return sequenceList;
     }
 
     /**
-     * 新增段落（接收前端传递的段落字段）
-     * @param articleId 文章ID
-     * @param sequenceContent 段落内容
-     * @param sequenceX0 x0坐标
-     * @param sequenceY0 y0坐标
-     * @param sequenceX1 x1坐标
-     * @param sequenceY1 y1坐标
-     * @param sequencePage 页码
-     * @return 生成的sequenceId
+     * 新增段落（仅核心字段）
      */
-    public String createSequence(String articleId, String sequenceContent,
-                                 Integer sequenceX0, Integer sequenceY0,
-                                 Integer sequenceX1, Integer sequenceY1,
-                                 Integer sequencePage) {
+    @Transactional(rollbackFor = Exception.class)
+    public String createSequence(String articleId, String sequenceContent) {
         GraphSequence sequence = new GraphSequence();
-        // 生成唯一sequenceId
         String sequenceId = UUID.randomUUID().toString().replace("-", "");
         sequence.setSequenceId(sequenceId);
         sequence.setArticleId(articleId);
-        // 填充前端传递的段落字段
         sequence.setSequenceContent(sequenceContent);
-        sequence.setSequenceX0(sequenceX0);
-        sequence.setSequenceY0(sequenceY0);
-        sequence.setSequenceX1(sequenceX1);
-        sequence.setSequenceY1(sequenceY1);
-        sequence.setSequencePage(sequencePage);
-        // 设置时间
         LocalDateTime now = LocalDateTime.now();
         sequence.setCreateTime(now);
         sequence.setUpdateTime(now);
-        // 插入数据库
         graphSequenceMapper.insert(sequence);
         return sequenceId;
     }
@@ -61,7 +56,24 @@ public class GraphSequenceService {
     /**
      * 更新段落更新时间
      */
+    @Transactional(rollbackFor = Exception.class)
     public void updateSequenceUpdateTime(String sequenceId) {
         graphSequenceMapper.updateUpdateTime(sequenceId, LocalDateTime.now());
+    }
+
+    /**
+     * 删除段落（先删子表，再删主表）
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteSequence(String sequenceId) {
+        // 1. 校验段落存在
+        GraphSequence sequence = graphSequenceMapper.selectBySequenceId(sequenceId);
+        if (sequence == null) {
+            throw new RuntimeException("段落不存在，sequenceId：" + sequenceId);
+        }
+        // 2. 删子表：位置信息
+        graphSequencePositionService.deletePositionBySequenceId(sequenceId);
+        // 3. 删主表
+        graphSequenceMapper.deleteBySequenceId(sequenceId);
     }
 }

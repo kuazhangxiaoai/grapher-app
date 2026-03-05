@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bonc.graph.sequence.mapper.GraphSequencePositionMapper">
+
+    <resultMap id="BaseResultMap" type="com.bonc.graph.sequence.domain.GraphSequencePosition">
+        <id column="position_id" property="positionId"/>
+        <result column="sequence_id" property="sequenceId"/>
+        <result column="sequence_x0" property="sequenceX0"/>
+        <result column="sequence_y0" property="sequenceY0"/>
+        <result column="sequence_x1" property="sequenceX1"/>
+        <result column="sequence_y1" property="sequenceY1"/>
+        <result column="sequence_page" property="sequencePage"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.bonc.graph.sequence.domain.GraphSequencePosition">
+        INSERT INTO graph_sequence_position (
+            position_id, sequence_id, sequence_x0, sequence_y0,
+            sequence_x1, sequence_y1, sequence_page, create_time, update_time
+        ) VALUES (
+                     #{positionId}, #{sequenceId}, #{sequenceX0}, #{sequenceY0},
+                     #{sequenceX1}, #{sequenceY1}, #{sequencePage}, #{createTime}, #{updateTime}
+                 )
+    </insert>
+
+    <insert id="batchInsert">
+        INSERT INTO graph_sequence_position (
+        position_id, sequence_id, sequence_x0, sequence_y0,
+        sequence_x1, sequence_y1, sequence_page, create_time, update_time
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.positionId}, #{item.sequenceId}, #{item.sequenceX0}, #{item.sequenceY0},
+            #{item.sequenceX1}, #{item.sequenceY1}, #{item.sequencePage}, #{item.createTime}, #{item.updateTime}
+            )
+        </foreach>
+    </insert>
+
+    <select id="selectBySequenceId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT position_id, sequence_id, sequence_x0, sequence_y0,
+               sequence_x1, sequence_y1, sequence_page, create_time, update_time
+        FROM graph_sequence_position
+        WHERE sequence_id = #{sequenceId}
+        ORDER BY create_time DESC
+    </select>
+
+    <delete id="deleteBySequenceId" parameterType="java.lang.String">
+        DELETE FROM graph_sequence_position
+        WHERE sequence_id = #{sequenceId}
+    </delete>
+
+</mapper>
