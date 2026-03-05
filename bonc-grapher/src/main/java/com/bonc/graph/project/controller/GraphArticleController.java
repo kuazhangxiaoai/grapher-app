@@ -40,7 +40,7 @@ public class GraphArticleController {
 
     /** 新增图谱 */
     @PostMapping("/addArticle")
-    public ResponseEntity<Object> addArticle(ArticleDto articleDto, @AuthenticationPrincipal PPTLoginUser loginUser){
+    public ResponseEntity<Object> addArticle(@ModelAttribute ArticleDto articleDto, @AuthenticationPrincipal PPTLoginUser loginUser){
         Map<String, Object> result = new HashMap<String, Object>();
         try {
             GraphUser user = loginUser.getUser();
