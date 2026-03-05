@@ -55,15 +55,10 @@
         where article_id = #{articleId}
     </update>
 
-    <update id="deleteArticle">
-        update graph_article
-        <trim prefix="SET" suffixOverrides=",">
-            <if test="updateBy != null">update_by = #{updateBy},</if>
-            <if test="updateTime != null">update_time = #{updateTime},</if>
-            <if test="delFlag != null">del_flag = #{delFlag},</if>
-        </trim>
+    <delete id="deleteArticle">
+        delete from graph_article
         where article_id = #{articleId}
-    </update>
+    </delete>
 
     <select id="selectArticle" resultMap="ArticleMap">
         select *  from graph_article
