@@ -18,7 +18,8 @@ public interface GraphArticleMapper {
      int updateArticle(Article article);
 
      /* 删除图谱 */
-     int deleteArticle(Article article);
+     int deleteArticle(String articleId);
+
 
      /*根据条件查询图谱*/
      List<Map<String, Object>> selectArticle(@Param("condition") String condition, @Param("topicId") String topicId);

@@ -6,11 +6,17 @@ import com.bonc.graph.project.domain.Article;
 import com.bonc.graph.project.dto.ArticleDto;
 import com.bonc.graph.project.mapper.GraphArticleMapper;
 import com.bonc.graph.project.service.GraphArticleService;
+import com.bonc.graph.sequence.domain.GraphSequence;
+import com.bonc.graph.sequence.mapper.GraphSequenceMapper;
+import com.bonc.graph.sequence.service.GraphNodeService;
+import com.bonc.graph.sequence.service.GraphRelationService;
+import com.bonc.graph.sequence.service.GraphSequenceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -22,6 +28,15 @@ public class GraphArticleServiceImpl implements GraphArticleService {
 
     @Autowired
     private GraphArticleMapper graphArticleMapper;
+    @Resource
+    private GraphSequenceMapper graphSequenceMapper;
+    @Autowired
+    private GraphNodeService graphNodeService;
+    @Autowired
+    private GraphRelationService graphRelationService;
+    @Autowired
+    private GraphSequenceService graphSequenceService;
+
     @Value("${fileSave.path}")
     private String FILE_SAVE;
     @Value("${img.url}")
@@ -115,9 +130,43 @@ public class GraphArticleServiceImpl implements GraphArticleService {
     /*删除图谱*/
     @Override
     public int deleteArticle(Article article) {
-        article.setUpdateTime(DateUtils.getNowDate());
-        article.setDelFlag("2");
-        return graphArticleMapper.deleteArticle(article);
+        //根据articleId查找所有的sequenceId
+        List<GraphSequence> graphSequences = graphSequenceMapper.selectByArticleId(article.getArticleId());
+        if(graphSequences.size()>0){
+            for(GraphSequence graphSequence:graphSequences){
+                //删除段落
+                graphSequenceService.deleteSequence(graphSequence.getSequenceId());
+                //删除节点
+                graphNodeService.deleteNodesBySequenceId(graphSequence.getSequenceId());
+                //删除关系
+                graphRelationService.deleteRelationsBySequenceId(graphSequence.getSequenceId());
+            }
+        }
+
+        Article fileArticle = graphArticleMapper.selectByArticleId(article.getArticleId());
+        if(fileArticle.getFileName()!=null&&!"".equals(fileArticle.getFileName())){
+            // 获取文件存储的完整路径（和上传时的路径保持一致）
+            String fileUrl = fileArticle.getFileUrl(); // 上传时保存的相对路径（newFileName）
+            if (fileUrl != null && !fileUrl.isEmpty()) {
+                // 拼接完整文件路径（和addArticle中的FILE_SAVE对应）
+                String fullFilePath = FILE_SAVE + File.separator + fileUrl;
+                File fileToDelete = new File(fullFilePath);
+
+                // 删除文件（避免文件不存在/权限问题导致报错）
+                if (fileToDelete.exists()) { // 先判断文件是否存在
+                    boolean isDeleted = fileToDelete.delete();
+                    if (!isDeleted) {
+                        throw new RuntimeException("文件删除失败：" + fullFilePath);
+                    }
+                } else {
+                    // 文件不存在，仅打印日志（不中断流程）
+                    System.out.println("文件不存在，无需删除，路径：" + fullFilePath);
+                }
+            }
+        }
+
+
+        return graphArticleMapper.deleteArticle(article.getArticleId());
     }
 
 

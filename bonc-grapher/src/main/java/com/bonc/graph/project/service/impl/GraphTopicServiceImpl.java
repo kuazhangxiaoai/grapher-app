@@ -6,6 +6,7 @@ import com.bonc.graph.project.domain.Article;
 import com.bonc.graph.project.domain.Topic;
 import com.bonc.graph.project.mapper.GraphArticleMapper;
 import com.bonc.graph.project.mapper.GraphTopicMapper;
+import com.bonc.graph.project.service.GraphArticleService;
 import com.bonc.graph.project.service.GraphTopicService;
 import com.bonc.graph.template.domain.GraphNodeTemplate;
 import com.bonc.graph.template.domain.GraphNodeTemplateProperty;
@@ -38,6 +39,8 @@ public class GraphTopicServiceImpl implements GraphTopicService {
     private GraphNodeTemplateMapper graphNodeTemplateMapper;
     @Autowired
     private GraphRelationTemplateMapper graphRelationTemplateMapper;
+    @Autowired
+    private GraphArticleService graphArticleService;
 
     /* 增加主题 */
     @Override
@@ -70,8 +73,16 @@ public class GraphTopicServiceImpl implements GraphTopicService {
     public int deleteBytopicId(Topic topic) {
         topic.setUpdateTime(DateUtils.getNowDate());
         topic.setDelFlag("2");
+        //查找该主题下的所有article
+        List<Article> articles = graphArticleMapper.selectArticlesByTopicId(topic.getTopicId());
+        if(articles.size()>0){
+            for(Article article:articles){
+                graphArticleService.deleteArticle(article);
+            }
+        }
         return graphTopicMapper.deleteBytopicId(topic);
     }
+
 
     /*复制主题*/
     @Override
