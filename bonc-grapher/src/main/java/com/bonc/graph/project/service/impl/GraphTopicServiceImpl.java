@@ -145,7 +145,8 @@ public class GraphTopicServiceImpl implements GraphTopicService {
         return newTopicId;
     }
 
-    /*复制实体和关系*/
+    /* ========复制实体模板和关系模板 ===========*/
+
     private void copyNodeAndRelation(String topicId, String newTopicId) {
 
         // 查询节点
@@ -173,7 +174,7 @@ public class GraphTopicServiceImpl implements GraphTopicService {
         if (!newNodes.isEmpty()) {
             graphNodeTemplateMapper.bantchInsert(newNodes);
 
-            // 插入后，需要重新查询新节点，以获取数据库生成的新ID，并建立映射
+            // 插入后，需要重新查询新节点模板，以获取数据库生成的新ID，并建立映射
             List<GraphNodeTemplate> insertedNewNodes = graphNodeTemplateMapper.selectByTopicId(newTopicId);
             for (int i = 0; i < oldNodes.size(); i++) {
                 Long oldNodeId = oldNodes.get(i).getNodeTemplateId();
@@ -182,11 +183,50 @@ public class GraphTopicServiceImpl implements GraphTopicService {
             }
         }
 
-        // 复制关系，并替换其中的节点ID
+
+        // ========== 2. 复制节模板点属性（补全核心逻辑） ==========
+        //根据旧的节点id查询节点模板属性
+        List<GraphNodeTemplateProperty> allOldNodeProperties = new ArrayList<>();
+        for (GraphNodeTemplate oldNode : oldNodes) {
+            List<GraphNodeTemplateProperty> oldNodeProperties = graphNodeTemplatePropertyMapper.selectByNodeTemplateId(oldNode.getNodeTemplateId());
+            // 如果当前节点有属性，加入总列表
+            if (!CollectionUtils.isEmpty(oldNodeProperties)) {
+                allOldNodeProperties.addAll(oldNodeProperties);
+            }
+        }
+
+        // 复制属性并关联新节点ID
+        if (!CollectionUtils.isEmpty(allOldNodeProperties)) {
+            List<GraphNodeTemplateProperty> newNodeProperties = new ArrayList<>();
+            for (GraphNodeTemplateProperty oldProp : allOldNodeProperties) {
+                GraphNodeTemplateProperty newProp = new GraphNodeTemplateProperty();
+                // 复制旧属性的所有字段
+                BeanUtils.copyProperties(oldProp, newProp);
+
+                // 清空自增主键，让数据库生成新ID
+                newProp.setNodeTemplatePropertyId(null);
+                // 替换为新的节点ID（通过旧→新映射
+                Long newNodeId = oldToNewNodeIdMap.get(oldProp.getNodeTemplateId());
+                if (newNodeId != null) {
+                    newProp.setNodeTemplateId(newNodeId);
+                }
+                newProp.setCreateTime(LocalDateTime.now());
+                newProp.setUpdateTime(null);
+                newProp.setIsDeleteFlag(oldProp.getIsDeleteFlag());
+                newNodeProperties.add(newProp);
+            }
+            // 批量插入新属性
+            graphNodeTemplatePropertyMapper.batchInsert(newNodeProperties);
+        }
+
+        // ========== 3. 复制关系模板 ==========
         List<GraphRelationTemplate> oldRelations = graphRelationTemplateMapper.selectByTopicId(topicId);
         if (CollectionUtils.isEmpty(oldRelations)) {
             return;
         }
+
+        // 存储旧关系ID到新关系ID的映射
+        Map<Long, Long> oldToNewRelationIdMap = new HashMap<>();
 
         List<GraphRelationTemplate> newRelations = new ArrayList<>();
         for (GraphRelationTemplate oldRelation : oldRelations) {
@@ -210,7 +250,58 @@ public class GraphTopicServiceImpl implements GraphTopicService {
         // 批量插入新关系
         if (!newRelations.isEmpty()) {
             graphRelationTemplateMapper.bantchInsert(newRelations);
+
+            // 插入后，重新查询新关系模板，建立旧→新关系ID映射
+            List<GraphRelationTemplate> insertedNewRelations = graphRelationTemplateMapper.selectByTopicId(newTopicId);
+            Map<String, Long> relationNameToNewIdMap = new HashMap<>();
+            for (GraphRelationTemplate newRelation : insertedNewRelations) {
+                relationNameToNewIdMap.put(newRelation.getRelationTemplateName(), newRelation.getRelationTemplateId());
+            }
+            for (GraphRelationTemplate oldRelation : oldRelations) {
+                Long oldRelationId = oldRelation.getRelationTemplateId();
+                Long newRelationId = relationNameToNewIdMap.get(oldRelation.getRelationTemplateName());
+                if (newRelationId != null) {
+                    oldToNewRelationIdMap.put(oldRelationId, newRelationId);
+                }
+            }
         }
+
+        // ========== 4. 复制关系模板属性（新增核心逻辑） ==========
+        List<GraphRelationTemplateProperty> allOldRelationProperties = new ArrayList<>();
+        for (GraphRelationTemplate oldRelation : oldRelations) {
+            // 查询当前旧关系对应的所有属性
+            List<GraphRelationTemplateProperty> oldRelationProperties = graphRelationTemplatePropertyMapper.selectByRelationTemplateId(oldRelation.getRelationTemplateId());
+            if (!CollectionUtils.isEmpty(oldRelationProperties)) {
+                allOldRelationProperties.addAll(oldRelationProperties);
+            }
+        }
+
+        // 复制关系属性并关联新关系ID
+        if (!CollectionUtils.isEmpty(allOldRelationProperties)) {
+            List<GraphRelationTemplateProperty> newRelationProperties = new ArrayList<>();
+            for (GraphRelationTemplateProperty oldProp : allOldRelationProperties) {
+                GraphRelationTemplateProperty newProp = new GraphRelationTemplateProperty();
+                BeanUtils.copyProperties(oldProp, newProp);
+
+                // 清空自增主键，让数据库生成新ID
+                newProp.setRelationTemplatePropertyId(null);
+                // 替换为新的关系ID（核心）
+                Long newRelationId = oldToNewRelationIdMap.get(oldProp.getRelationTemplateId());
+                if (newRelationId != null) {
+                    newProp.setRelationTemplateId(newRelationId);
+                }
+                newProp.setCreateTime(LocalDateTime.now());
+                newProp.setUpdateTime(null);
+                newProp.setIsDeleteFlag(oldProp.getIsDeleteFlag());
+
+                newRelationProperties.add(newProp);
+            }
+            // 批量插入新关系属性
+            graphRelationTemplatePropertyMapper.batchInsert(newRelationProperties);
+        }
+
+
+
     }
 
     /*复制图谱*/
