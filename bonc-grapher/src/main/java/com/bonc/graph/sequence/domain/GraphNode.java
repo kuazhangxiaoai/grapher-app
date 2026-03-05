@@ -12,6 +12,7 @@ import java.util.List;
 public class GraphNode {
     private Long nodeId;
     private String nodeHash;
+    private String nodeTemplateName;//节点类型
     private String nodeName;
     private String nodeDescription;
     private String nodeColor;

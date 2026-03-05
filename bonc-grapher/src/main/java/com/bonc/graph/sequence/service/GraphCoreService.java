@@ -111,6 +111,7 @@ public class GraphCoreService {
         List<GraphResponseDTO.NodeResponseDTO> nodeDTOList = nodes.stream().map(node -> {
             GraphResponseDTO.NodeResponseDTO nodeDTO = new GraphResponseDTO.NodeResponseDTO();
             nodeDTO.setNodeHash(node.getNodeHash());
+            nodeDTO.setNodeTemplateName(node.getNodeTemplateName());
             nodeDTO.setNodeName(node.getNodeName());
             nodeDTO.setNodeDescription(node.getNodeDescription());
             nodeDTO.setNodeColor(node.getNodeColor());

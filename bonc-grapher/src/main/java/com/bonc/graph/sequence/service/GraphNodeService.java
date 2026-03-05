@@ -44,6 +44,7 @@ public class GraphNodeService {
             // 构建节点
             GraphNode node = new GraphNode();
             node.setNodeHash(nodeDTO.getNodeHash());
+            node.setNodeTemplateName(nodeDTO.getNodeTemplateName());
             node.setNodeName(nodeDTO.getNodeName());
             node.setNodeDescription(nodeDTO.getNodeDescription());
             node.setNodeColor(nodeDTO.getNodeColor());

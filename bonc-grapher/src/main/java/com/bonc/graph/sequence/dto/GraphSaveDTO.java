@@ -31,6 +31,7 @@ public class GraphSaveDTO {
     @Data
     public static class NodeDTO {
         private String nodeHash;
+        private String nodeTemplateName;//节点类型
         private String nodeName;
         private String nodeDescription;
         private String nodeColor;
