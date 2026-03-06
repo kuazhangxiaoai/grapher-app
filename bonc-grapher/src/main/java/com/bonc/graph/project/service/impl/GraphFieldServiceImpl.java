@@ -71,19 +71,12 @@ public class GraphFieldServiceImpl implements GraphFieldService {
     public String copyField(String fieldId, String fieldName, String userName) {
 
         Field oldfield = graphFieldMapper.selectByFieldId(fieldId);
-        if(oldfield!=null&&oldfield.getFieldName().equals(fieldName)){
-            throw new ValidationException("复制领域的名称需与原领域名称存在差异化，不支持同名复制");
-        }
         // 先复制领域
         String fieldUuid = UUID.randomUUID().toString();
         Field field = graphFieldMapper.selectByFieldId(fieldId);
         Field newField = new Field();
         newField.setFieldId(fieldUuid);
-        if(fieldName!=null && !"".equals(fieldName)){
-            newField.setFieldName(fieldName);
-        }else{
-            newField.setFieldName(field.getFieldName());
-        }
+        newField.setFieldName(fieldName);
         newField.setCreateBy(userName);
         graphFieldMapper.addField(newField);
         //复制领域下的所有专题

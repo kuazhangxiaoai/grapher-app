@@ -119,22 +119,22 @@ public class GraphTopicServiceImpl implements GraphTopicService {
         String newTopicId = UUID.randomUUID().toString();
         //根据主题id进行查找
         Topic oldTopic = graphTopicMapper.selectTopicById(topicId);
-        if(oldTopic.getTopicName().equals(topicName)){
-            throw new ValidationException("复制专题的名称需与原专题名称存在差异化，不支持同名复制");
+        // 校验原专题是否存在
+        if (oldTopic == null) {
+            throw new ValidationException("原专题不存在，无法完成复制操作");
         }
         Topic newTopic = new Topic();
         newTopic.setTopicId(newTopicId);
         newTopic.setCreateBy(userName);
-        if(!"".equals(topicName) && topicName !=null ){
-            newTopic.setTopicName(topicName);
-        }else {
-            newTopic.setTopicName(oldTopic.topicName);
-        }
+        newTopic.setTopicName(topicName);
         // 如果传进来领域id 就是复制领域时调用的该方法
         if(newFieldId!=null){
             newTopic.setFieldId(newFieldId);
         }else{
             newTopic.setFieldId(oldTopic.getFieldId());
+            if(topicName.equals(oldTopic.getTopicName())){
+                throw new ValidationException("复制专题的名称需与原专题名称存在差异化，不支持同名复制");
+            }
         }
         newTopic.setCreateTime(DateUtils.getNowDate());
         newTopic.setDelFlag("0");
