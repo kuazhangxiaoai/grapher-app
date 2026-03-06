@@ -144,7 +144,7 @@ public class GraphArticleServiceImpl implements GraphArticleService {
         }
 
         Article fileArticle = graphArticleMapper.selectByArticleId(article.getArticleId());
-        if(fileArticle.getFileName()!=null&&!"".equals(fileArticle.getFileName())){
+        if(fileArticle != null && fileArticle.getFileName()!=null&&!"".equals(fileArticle.getFileName())){
             // 获取文件存储的完整路径（和上传时的路径保持一致）
             String fileUrl = fileArticle.getFileUrl(); // 上传时保存的相对路径（newFileName）
             if (fileUrl != null && !fileUrl.isEmpty()) {
