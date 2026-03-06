@@ -119,7 +119,9 @@ public class GraphTopicServiceImpl implements GraphTopicService {
         String newTopicId = UUID.randomUUID().toString();
         //根据主题id进行查找
         Topic oldTopic = graphTopicMapper.selectTopicById(topicId);
-
+        if(oldTopic.getTopicName().equals(topicName)){
+            throw new ValidationException("复制专题的名称需与原专题名称存在差异化，不支持同名复制");
+        }
         Topic newTopic = new Topic();
         newTopic.setTopicId(newTopicId);
         newTopic.setCreateBy(userName);

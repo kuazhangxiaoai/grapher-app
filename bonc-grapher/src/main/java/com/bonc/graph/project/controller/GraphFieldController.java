@@ -31,6 +31,7 @@ public class GraphFieldController {
      */
     @PostMapping("/addField")
     public Result addField(@RequestBody Field field,@AuthenticationPrincipal PPTLoginUser loginUser) {
+        log.info("领域新增接口:/graph_api/v1/field/addField");
         Result result = new Result();
         try {
             GraphUser user = loginUser.getUser();
@@ -52,6 +53,7 @@ public class GraphFieldController {
     @GetMapping(value = "/selectFieldByCondition")
     public Result fieldSearch(@RequestParam(required = false) String condition)
     {
+        log.info("领域查询接口:/graph_api/v1/field/selectFieldByCondition");
         Result result = new Result();
         try {
             result.successResult(graphFieldService.selectFieldByCondition(condition));
@@ -72,7 +74,7 @@ public class GraphFieldController {
     {
         Result result = new Result();
         try {
-            log.info("开始调用领域删除--remove接口");
+            log.info("领域删除接口:/graph_api/v1/field/remove");
             Field field = new Field();
             GraphUser user = loginUser.getUser();
             String userName = user.getUserName();
@@ -90,12 +92,13 @@ public class GraphFieldController {
                             @RequestParam(required = false, value = "fieldName") String fieldName,@AuthenticationPrincipal PPTLoginUser loginUser){
         Result result = new Result();
         try {
+            log.info("领域复制接口:/graph_api/v1/field/copyField");
             GraphUser user = loginUser.getUser();
             String userName = user.getUserName();
 
             result.successResult(graphFieldService.copyField(fieldId,fieldName,userName));
         }catch (Exception e){
-            result.failResult(e.getMessage());
+            result.setResult("0001",e.getMessage(),null);
             e.printStackTrace();
         }
         return result;

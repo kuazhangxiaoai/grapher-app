@@ -24,7 +24,7 @@ public class GraphTopicController {
     private GraphTopicService graphTopicService;
 
     /**
-     * 增加领域
+     * 增加专题
      * @param topic
      * @param loginUser
      * @return
@@ -33,6 +33,7 @@ public class GraphTopicController {
     public Result addtopic(@RequestBody Topic topic, @AuthenticationPrincipal PPTLoginUser loginUser){
         Result result = new Result();
         try {
+            log.info("专题新增接口:/graph_api/v1/topic/addTopic");
             GraphUser user = loginUser.getUser();
             String userName = user.getUserName();
             topic.setCreateBy(userName);
@@ -54,6 +55,7 @@ public class GraphTopicController {
     {
         Result result = new Result();
         try {
+            log.info("专题查询接口:/graph_api/v1/topic/selectTopicByCondition");
             result.successResult(graphTopicService.selectTopicByCondition(condition,fieldId));
         }catch (Exception e){
             result.failResult(e.getMessage());
@@ -92,11 +94,12 @@ public class GraphTopicController {
                             @RequestParam(required = false, value = "topicName") String topicName,@AuthenticationPrincipal PPTLoginUser loginUser){
         Result result = new Result();
         try {
+            log.info("开始调用专题复制接口:/graph_api/v1/topic/copyTopic");
             GraphUser user = loginUser.getUser();
             String userName = user.getUserName();
             result.successResult(graphTopicService.copyTopic(topicId,null,topicName,userName));
         }catch (Exception e){
-            result.failResult(e.getMessage());
+            result.setResult("0001",e.getMessage(),null);
             e.printStackTrace();
         }
         return result;

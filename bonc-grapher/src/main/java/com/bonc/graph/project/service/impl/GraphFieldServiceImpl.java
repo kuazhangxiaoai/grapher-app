@@ -70,6 +70,10 @@ public class GraphFieldServiceImpl implements GraphFieldService {
     @Transactional(rollbackFor = Exception.class)
     public String copyField(String fieldId, String fieldName, String userName) {
 
+        Field oldfield = graphFieldMapper.selectByFieldId(fieldId);
+        if(oldfield!=null&&oldfield.getFieldName().equals(fieldName)){
+            throw new ValidationException("复制领域的名称需与原领域名称存在差异化，不支持同名复制");
+        }
         // 先复制领域
         String fieldUuid = UUID.randomUUID().toString();
         Field field = graphFieldMapper.selectByFieldId(fieldId);
