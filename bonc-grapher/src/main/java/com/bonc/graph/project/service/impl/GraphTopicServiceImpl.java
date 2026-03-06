@@ -127,13 +127,17 @@ public class GraphTopicServiceImpl implements GraphTopicService {
         newTopic.setTopicId(newTopicId);
         newTopic.setCreateBy(userName);
         newTopic.setTopicName(topicName);
-        // 如果传进来领域id 就是复制领域时调用的该方法
+        // 如果传进来领域id 不是null 就是复制领域时调用的该方法
         if(newFieldId!=null){
             newTopic.setFieldId(newFieldId);
         }else{
             newTopic.setFieldId(oldTopic.getFieldId());
             if(topicName.equals(oldTopic.getTopicName())){
                 throw new ValidationException("复制专题的名称需与原专题名称存在差异化，不支持同名复制");
+            }
+            int count = graphTopicMapper.checkTopic(topicName,oldTopic.getFieldId());
+            if(count>0){
+                throw new ValidationException("已存在名称为【" + topicName + "】的专题，请勿重复复制");
             }
         }
         newTopic.setCreateTime(DateUtils.getNowDate());
