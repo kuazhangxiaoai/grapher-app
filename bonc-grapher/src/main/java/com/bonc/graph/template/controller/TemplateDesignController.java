@@ -182,7 +182,7 @@ public class TemplateDesignController {
     // 2-8. 图谱构建-根据topicId查询关系列表接口
     @GetMapping("/queryRelationTemplate")
     public Result queryRelationTemplate(@RequestParam String topicId) {
-        log.info("根据topicId查询节点列表接口:/graph_api/v1/template/queryRelationTemplate");
+        log.info("根据topicId查询关系列表接口:/graph_api/v1/template/queryRelationTemplate");
         log.info("topicId:"+ topicId);
         Result result = new Result();
         try {
@@ -198,7 +198,7 @@ public class TemplateDesignController {
     // 2-9. 图谱构建-根据relationTemplateId查询关系属性列表接口
     @GetMapping("/queryRelationTemplateProperties")
     public Result queryRelationTemplateProperties(@RequestParam Long relationTemplateId) {
-        log.info("根据nodeTemplateId查询节点属性列表接口:/graph_api/v1/template/queryRelationTemplateProperties");
+        log.info("根据relationTemplateId查询关系属性列表接口:/graph_api/v1/template/queryRelationTemplateProperties");
         log.info("relationTemplateId:"+ relationTemplateId);
         Result result = new Result();
         try {
