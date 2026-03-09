@@ -2,6 +2,8 @@ package com.bonc.graph.template.controller;
 
 import com.bonc.graph.template.domain.GraphNodeTemplate;
 import com.bonc.graph.template.domain.GraphNodeTemplateProperty;
+import com.bonc.graph.template.domain.GraphRelationTemplate;
+import com.bonc.graph.template.domain.GraphRelationTemplateProperty;
 import com.bonc.graph.template.dto.AddToModelDTO;
 import com.bonc.graph.template.dto.NodeTemplateSaveDTO;
 import com.bonc.graph.template.dto.RelationTemplateSaveDTO;
@@ -145,7 +147,7 @@ public class TemplateDesignController {
         return result;
     }
 
-    // 8. 根据topicId查询节点列表接口
+    // 2-6. 图谱构建-根据topicId查询节点列表接口
     @GetMapping("/queryNodeTemplate")
     public Result queryNodeTemplate(@RequestParam String topicId) {
         log.info("根据topicId查询节点列表接口:/graph_api/v1/template/queryNodeTemplate");
@@ -161,7 +163,7 @@ public class TemplateDesignController {
         return result;
     }
 
-    // 9. 根据nodeTemplateId查询节点属性列表接口
+    // 2-7. 图谱构建-根据nodeTemplateId查询节点属性列表接口
     @GetMapping("/queryNodeTemplateProperties")
     public Result queryNodeTemplateProperties(@RequestParam Long nodeTemplateId) {
         log.info("根据nodeTemplateId查询节点属性列表接口:/graph_api/v1/template/queryNodeTemplateProperties");
@@ -169,6 +171,38 @@ public class TemplateDesignController {
         Result result = new Result();
         try {
             List<GraphNodeTemplateProperty> resList = templateDesignService.queryNodeTemplateProperties(nodeTemplateId);
+            result.successResult(resList);
+        } catch (Exception e) {
+            result.failResult(e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    // 2-8. 图谱构建-根据topicId查询关系列表接口
+    @GetMapping("/queryRelationTemplate")
+    public Result queryRelationTemplate(@RequestParam String topicId) {
+        log.info("根据topicId查询节点列表接口:/graph_api/v1/template/queryRelationTemplate");
+        log.info("topicId:"+ topicId);
+        Result result = new Result();
+        try {
+            List<GraphRelationTemplate> resList= templateDesignService.queryRelationTemplate(topicId);
+            result.successResult(resList);
+        } catch (Exception e) {
+            result.failResult(e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    // 2-9. 图谱构建-根据relationTemplateId查询关系属性列表接口
+    @GetMapping("/queryRelationTemplateProperties")
+    public Result queryRelationTemplateProperties(@RequestParam Long relationTemplateId) {
+        log.info("根据nodeTemplateId查询节点属性列表接口:/graph_api/v1/template/queryRelationTemplateProperties");
+        log.info("relationTemplateId:"+ relationTemplateId);
+        Result result = new Result();
+        try {
+            List<GraphRelationTemplateProperty> resList = templateDesignService.queryRelationTemplateProperties(relationTemplateId);
             result.successResult(resList);
         } catch (Exception e) {
             result.failResult(e.getMessage());

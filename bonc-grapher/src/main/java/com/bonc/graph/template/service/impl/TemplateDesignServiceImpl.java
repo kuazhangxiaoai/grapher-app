@@ -262,17 +262,31 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
         }
     }
 
-    // 8. 图谱构建-节点模版查询接口
+    // 2-6. 图谱构建-节点模版查询接口
     public List<GraphNodeTemplate> queryNodeTemplate(String topicId) {
         // 查询节点模版
         List<GraphNodeTemplate> nodeTemplates = nodeTemplateMapper.selectByTopicId(topicId);
         return nodeTemplates;
     }
 
-    // 9. 图谱构建-节点模版属性查询接口
+    // 2-7. 图谱构建-节点模版属性查询接口
     public List<GraphNodeTemplateProperty> queryNodeTemplateProperties(Long nodeTemplateId) {
         // 查询节点模版属性
         List<GraphNodeTemplateProperty> properties = nodePropertyMapper.selectByNodeTemplateId(nodeTemplateId);
+        return properties;
+    }
+
+    // 2-8. 图谱构建-根据topicId查询关系列表接口
+    public List<GraphRelationTemplate> queryRelationTemplate(String topicId) {
+        // 查询关系模版
+        List<GraphRelationTemplate> relationTemplates = relationTemplateMapper.selectByTopicId(topicId);
+        return relationTemplates;
+    }
+
+    // 2-9. 图谱构建-根据relationTemplateId查询关系属性列表接口
+    public List<GraphRelationTemplateProperty> queryRelationTemplateProperties(Long relationTemplateId) {
+        // 查询节点模版属性
+        List<GraphRelationTemplateProperty> properties = relationPropertyMapper.selectByRelationTemplateId(relationTemplateId);
         return properties;
     }
 

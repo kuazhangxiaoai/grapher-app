@@ -2,6 +2,8 @@ package com.bonc.graph.template.service;
 
 import com.bonc.graph.template.domain.GraphNodeTemplate;
 import com.bonc.graph.template.domain.GraphNodeTemplateProperty;
+import com.bonc.graph.template.domain.GraphRelationTemplate;
+import com.bonc.graph.template.domain.GraphRelationTemplateProperty;
 import com.bonc.graph.template.dto.AddToModelDTO;
 import com.bonc.graph.template.dto.NodeTemplateSaveDTO;
 import com.bonc.graph.template.dto.RelationTemplateSaveDTO;
@@ -29,4 +31,8 @@ public interface TemplateDesignService {
     List<GraphNodeTemplate> queryNodeTemplate(@Param("topicId") String topicId);
 
     List<GraphNodeTemplateProperty> queryNodeTemplateProperties(@Param("nodeTemplateId") Long nodeTemplateId);
+
+    List<GraphRelationTemplate> queryRelationTemplate(@Param("topicId") String topicId);
+
+    List<GraphRelationTemplateProperty> queryRelationTemplateProperties(@Param("relationTemplateId") Long relationTemplateId);
 }
