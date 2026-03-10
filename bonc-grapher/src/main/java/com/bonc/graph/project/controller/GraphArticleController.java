@@ -7,6 +7,7 @@ import com.bonc.graph.project.domain.Field;
 import com.bonc.graph.project.dto.ArticleDto;
 import com.bonc.graph.project.service.GraphArticleService;
 import com.bonc.graph.user.domain.Result;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/graph_api/v1/article")
 public class GraphArticleController {
@@ -23,45 +25,41 @@ public class GraphArticleController {
 
     /** 查找图谱 */
     @GetMapping("/selectArticle")
-    public ResponseEntity<Object> selectArticle(@RequestParam(required = false) String condition, @RequestParam(required = false) String topicId){
-        Map<String, Object> result = new HashMap<String, Object>();
+    public Result selectArticle(@RequestParam(required = false) String condition, @RequestParam(required = false) String topicId){
+        Result result = new Result();
         try {
-            result.put("data", graphArticleService.selectArticle(condition,topicId));
-            result.put("code", 200);
-            return new ResponseEntity<Object>(result, HttpStatus.OK);
+            result.successResult(graphArticleService.selectArticle(condition,topicId));
         }catch (Exception e){
-            result.put("data", null);
-            result.put("message", e.getMessage());
-            result.put("code", 500);
+            result.setResult("0001",e.getMessage(),null);
             e.printStackTrace();
-            return new ResponseEntity<Object>(result, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        return result;
     }
 
     /** 新增图谱 */
     @PostMapping("/addArticle")
-    public ResponseEntity<Object> addArticle(@ModelAttribute ArticleDto articleDto, @AuthenticationPrincipal PPTLoginUser loginUser){
-        Map<String, Object> result = new HashMap<String, Object>();
+    public Result addArticle(@ModelAttribute ArticleDto articleDto, @AuthenticationPrincipal PPTLoginUser loginUser){
+        Result result = new Result();
         try {
             GraphUser user = loginUser.getUser();
             String userName = user.getUserName();
-            result.put("data", graphArticleService.addArticle(articleDto,userName));
-            result.put("code", 200);
-            return new ResponseEntity<Object>(result, HttpStatus.OK);
+            String topicId = articleDto.getTopicId();
+            if(topicId==null||"".equals(topicId)){
+                throw new IllegalArgumentException("主题ID不能为空");
+            }
+            result.successResult(graphArticleService.addArticle(articleDto,userName));
         }catch (Exception e){
-            result.put("data", null);
-            result.put("message", e.getMessage());
-            result.put("code", 500);
+            result.setResult("0001",e.getMessage(),null);
             e.printStackTrace();
-            return new ResponseEntity<Object>(result, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        return result;
     }
-
 
     /** 修改图谱 */
     @GetMapping("/updateArticle")
-    public ResponseEntity<Object> updateArticle(@RequestParam String articleId,@RequestParam String articleName,@AuthenticationPrincipal PPTLoginUser loginUser){
-        Map<String, Object> result = new HashMap<String, Object>();
+    public Result updateArticle(@RequestParam String articleId,@RequestParam String articleName,@AuthenticationPrincipal PPTLoginUser loginUser){
+        log.info("图谱修改接口:/graph_api/v1/article/updateArticle");
+        Result result = new Result();
         try {
             GraphUser user = loginUser.getUser();
             String updateBy = user.getUserName();
@@ -69,70 +67,49 @@ public class GraphArticleController {
             article.setUpdateBy(updateBy);
             article.setArticleId(articleId);
             article.setArticleName(articleName);
-            result.put("data", graphArticleService.updateArticle(article));
-            result.put("code", 200);
-            return new ResponseEntity<Object>(result, HttpStatus.OK);
+            result.successResult(graphArticleService.updateArticle(article));
         }catch (Exception e){
-            result.put("data", null);
-            result.put("message", e.getMessage());
-            result.put("code", 500);
+            result.failResult(e.getMessage());
             e.printStackTrace();
-            return new ResponseEntity<Object>(result, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        return result;
     }
 
 
     /** 删除图谱 */
     @GetMapping("/deleteArticle")
-    public ResponseEntity<Object> deleteArticle(@RequestParam String articleId,@AuthenticationPrincipal PPTLoginUser loginUser){
-        Map<String, Object> result = new HashMap<String, Object>();
+    public Result deleteArticle(@RequestParam String articleId,@AuthenticationPrincipal PPTLoginUser loginUser){
+        log.info("图谱删除接口:/graph_api/v1/article/deleteArticle");
+        Result result = new Result();
         try {
             GraphUser user = loginUser.getUser();
             String updateBy = user.getUserName();
+            if (articleId == null) {
+                throw new IllegalArgumentException("图谱ID不能为空");
+            }
             Article article = new Article();
             article.setUpdateBy(updateBy);
             article.setArticleId(articleId);
-            result.put("data", graphArticleService.deleteArticle(article));
-            result.put("code", 200);
-            return new ResponseEntity<Object>(result, HttpStatus.OK);
+            result.successResult(graphArticleService.deleteArticle(article));
         }catch (Exception e){
-            result.put("data", null);
-            result.put("message", e.getMessage());
-            result.put("code", 500);
+            result.failResult(e.getMessage());
             e.printStackTrace();
-            return new ResponseEntity<Object>(result, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        return result;
     }
 
 
     /** 查询文件地址 */
     @GetMapping("/getFileUrl")
-    public ResponseEntity<Object> getFileUrl(@RequestParam String articleId){
-        Map<String, Object> result = new HashMap<String, Object>();
+    public Result getFileUrl(@RequestParam String articleId){
+        log.info("查询文件地址接口:/graph_api/v1/article/getFileUrl");
+        Result result = new Result();
         try {
-            String url = graphArticleService.getFileUrl(articleId);
-            if(url == null || url.isEmpty()) {
-                //NOT FOUND
-                result.put("data", null);
-                result.put("code", 404);
-                return new ResponseEntity<Object>(result, HttpStatus.NOT_FOUND);
-            }
-            else {
-                //SUCCESS
-                result.put("data", url);
-                result.put("code", 200);
-                return new ResponseEntity<Object>(result, HttpStatus.OK);
-            }
-
+            result.successResult(graphArticleService.getFileUrl(articleId));
         }catch (Exception e){
-            //ERROR
-            result.put("data", null);
-            result.put("message", e.getMessage());
-            result.put("code", 500);
+            result.failResult(e.getMessage());
             e.printStackTrace();
-            return new ResponseEntity<Object>(result, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        return result;
     }
-
-
 }
