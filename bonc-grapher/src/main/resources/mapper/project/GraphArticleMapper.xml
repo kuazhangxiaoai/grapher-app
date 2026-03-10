@@ -118,4 +118,7 @@
         SELECT * FROM graph_article WHERE article_id = #{articleId}
     </select>
 
+    <select id="selectByArticleName" resultMap="ArticleMap">
+        SELECT * FROM graph_article WHERE article_name = #{articleName} and topic_id = #{topicId}
+    </select>
 </mapper>

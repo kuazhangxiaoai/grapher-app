@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.validation.ValidationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -62,6 +63,13 @@ public class GraphArticleServiceImpl implements GraphArticleService {
     /*新增图谱*/
     @Override
     public String addArticle(ArticleDto articleDto, String userName) {
+
+        String oldArticleName = articleDto.getArticleName();
+        String oldTopicId = articleDto.getTopicId();
+        Article oldArticle= graphArticleMapper.selectByArticleName(oldArticleName,oldTopicId);
+        if(oldArticle!=null){
+            throw new ValidationException("该专题下已存在名称为【" + oldArticleName + "】的图谱，请勿重复创建");
+        }
         Article article = new Article();
         // 图谱id
         String articleId = UUID.randomUUID().toString();

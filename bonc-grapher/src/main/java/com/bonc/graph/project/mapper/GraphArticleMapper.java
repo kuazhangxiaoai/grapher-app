@@ -37,4 +37,7 @@ public interface GraphArticleMapper {
       * 根据articleId查询文章信息
       */
      Article selectByArticleId(@Param("articleId") String articleId);
+
+
+     Article selectByArticleName(@Param("articleName") String oldArticleName, @Param("topicId") String oldTopicId);
 }
