@@ -133,10 +133,23 @@ public class GraphRelationService {
     }
 
     /**
-     * 根据TopicId查询关系（去重，含属性）
+     * 根据topicId查询关系（去重，含属性）
      */
     public List<GraphRelation> getDistinctRelationsByTopicId(String topicId) {
         List<GraphRelation> relations = graphRelationMapper.selectDistinctByTopicId(topicId);
+        // 填充属性
+        for (GraphRelation relation : relations) {
+            List<GraphRelationProperty> properties = graphRelationPropertyMapper.selectByRelationId(relation.getRelationId());
+            relation.setProperties(properties);
+        }
+        return relations;
+    }
+
+    /**
+     * 根据fieldId查询关系（去重，含属性）
+     */
+    public List<GraphRelation> getDistinctRelationsByFieldId(String fieldId) {
+        List<GraphRelation> relations = graphRelationMapper.selectDistinctByFieldId(fieldId);
         // 填充属性
         for (GraphRelation relation : relations) {
             List<GraphRelationProperty> properties = graphRelationPropertyMapper.selectByRelationId(relation.getRelationId());

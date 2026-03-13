@@ -137,4 +137,17 @@ public class GraphNodeService {
         }
         return nodes;
     }
+
+    /**
+     * 根据TopicId查询节点（去重，含属性）
+     */
+    public List<GraphNode> getDistinctNodesByFieldId(String fieldId) {
+        List<GraphNode> nodes = graphNodeMapper.selectDistinctByFieldId(fieldId);
+        // 填充属性
+        for (GraphNode node : nodes) {
+            List<GraphNodeProperty> properties = graphNodePropertyMapper.selectByNodeId(node.getNodeId());
+            node.setProperties(properties);
+        }
+        return nodes;
+    }
 }

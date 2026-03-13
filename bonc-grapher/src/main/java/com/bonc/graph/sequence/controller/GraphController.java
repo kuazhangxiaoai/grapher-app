@@ -142,5 +142,24 @@ public class GraphController {
         return result;
     }
 
+    /**
+     * 7. 图谱构建-领域对应图谱查询接口
+     * @param fieldId 领域ID
+     * @return 图谱数据（去重）
+     */
+    @GetMapping("/getGraphByFieldId")
+    public Result getGraphByFieldId(@RequestParam String fieldId) {
+        log.info("图谱构建-领域对应图谱查询接口:/graph_api/v1/sequence/getGraphByFieldId");
+        Result result = new Result();
+        try {
+            GraphResponseDTO res = graphCoreService.getGraphByFieldId(fieldId);
+            result.successResult(res);
+        }catch (Exception e){
+            result.failResult(e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
+
 
 }

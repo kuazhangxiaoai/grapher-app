@@ -124,6 +124,19 @@ public class GraphCoreService {
         return convertToGraphResponseDTO(nodes, relations);
     }
 
+
+    /**
+     * 根据fieldId查询图谱（去重）
+     */
+    public GraphResponseDTO getGraphByFieldId(String fieldId) {
+        // 1. 查询节点（去重）
+        List<GraphNode> nodes = graphNodeService.getDistinctNodesByFieldId(fieldId);
+        // 2. 查询关系（去重）
+        List<GraphRelation> relations = graphRelationService.getDistinctRelationsByFieldId(fieldId);
+        // 3. 转换为返回DTO
+        return convertToGraphResponseDTO(nodes, relations);
+    }
+
     /**
      * 转换为返回DTO
      */

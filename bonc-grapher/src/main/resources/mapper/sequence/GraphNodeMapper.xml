@@ -90,4 +90,28 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE t.rn = 1
     </select>
 
+    <select id="selectDistinctByFieldId" resultMap="BaseResultMap">
+        SELECT
+            t.node_id,
+            t.node_hash,
+            t.node_template_name,
+            t.node_name,
+            t.node_description,
+            t.node_color,
+            t.create_time,
+            t.update_time,
+            t.field_id,
+            t.topic_id,
+            t.article_id,
+            t.sequence_id
+        FROM (
+                 SELECT
+                     *,
+                     ROW_NUMBER() OVER (PARTITION BY node_hash ORDER BY create_time ASC) AS rn
+                 FROM graph_node
+                 WHERE field_id = #{fieldId}
+             ) t
+        WHERE t.rn = 1
+    </select>
+
 </mapper>
