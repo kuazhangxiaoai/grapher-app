@@ -65,7 +65,7 @@ public class HashUtil {
         }
 
         // 3. 生成Hash
-        int hash = MurmurHash.hash32(sb.toString());
-        return String.valueOf(hash);
+        long hash64 = MurmurHash.hash64(sb.toString());
+        return String.valueOf(hash64);
     }
 }
