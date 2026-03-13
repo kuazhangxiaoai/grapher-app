@@ -141,6 +141,7 @@ public class GraphCoreService {
         List<GraphResponseDTO.RelationResponseDTO> relationDTOList = relations.stream().map(relation -> {
             GraphResponseDTO.RelationResponseDTO relationDTO = new GraphResponseDTO.RelationResponseDTO();
             relationDTO.setRelationHash(relation.getRelationHash());
+            relationDTO.setRelationTemplateName(relation.getRelationTemplateName());
             relationDTO.setRelationName(relation.getRelationName());
             relationDTO.setRelationType(relation.getRelationType());
             relationDTO.setRelationTrigger(relation.getRelationTrigger());
