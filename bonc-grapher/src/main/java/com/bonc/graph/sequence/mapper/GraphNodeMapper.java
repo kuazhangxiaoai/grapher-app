@@ -27,4 +27,9 @@ public interface GraphNodeMapper {
      * 根据articleId查询节点列表（去重）
      */
     List<GraphNode> selectDistinctByArticleId(@Param("articleId") String articleId);
+
+    /**
+     * 根据articleId查询节点列表（去重）
+     */
+    List<GraphNode> selectDistinctByTopicId(@Param("topicId") String topicId);
 }

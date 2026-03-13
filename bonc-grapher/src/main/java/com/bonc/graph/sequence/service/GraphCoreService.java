@@ -113,6 +113,18 @@ public class GraphCoreService {
     }
 
     /**
+     * 根据TopicId查询图谱（去重）
+     */
+    public GraphResponseDTO getGraphByTopicId(String topicId) {
+        // 1. 查询节点（去重）
+        List<GraphNode> nodes = graphNodeService.getDistinctNodesByTopicId(topicId);
+        // 2. 查询关系（去重）
+        List<GraphRelation> relations = graphRelationService.getDistinctRelationsByTopicId(topicId);
+        // 3. 转换为返回DTO
+        return convertToGraphResponseDTO(nodes, relations);
+    }
+
+    /**
      * 转换为返回DTO
      */
     private GraphResponseDTO convertToGraphResponseDTO(List<GraphNode> nodes, List<GraphRelation> relations) {

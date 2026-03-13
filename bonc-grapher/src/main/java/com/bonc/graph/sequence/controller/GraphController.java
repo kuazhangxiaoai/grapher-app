@@ -122,4 +122,25 @@ public class GraphController {
         }
         return result;
     }
+
+    /**
+     * 6. 图谱构建-专题对应图谱查询接口
+     * @param topicId 专题ID
+     * @return 图谱数据（去重）
+     */
+    @GetMapping("/getGraphByTopicId")
+    public Result getGraphByTopicId(@RequestParam String topicId) {
+        log.info("图谱构建-专题对应图谱查询接口:/graph_api/v1/sequence/getGraphByTopicId");
+        Result result = new Result();
+        try {
+            GraphResponseDTO res = graphCoreService.getGraphByTopicId(topicId);
+            result.successResult(res);
+        }catch (Exception e){
+            result.failResult(e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+
 }

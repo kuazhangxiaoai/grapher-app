@@ -27,4 +27,9 @@ public interface GraphRelationMapper {
      * 根据articleId查询关系列表（去重）
      */
     List<GraphRelation> selectDistinctByArticleId(@Param("articleId") String articleId);
+
+    /**
+     * 根据articleId查询关系列表（去重）
+     */
+    List<GraphRelation> selectDistinctByTopicId(@Param("topicId") String topicId);
 }

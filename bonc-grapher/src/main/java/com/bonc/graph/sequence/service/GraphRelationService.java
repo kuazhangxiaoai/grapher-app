@@ -131,4 +131,17 @@ public class GraphRelationService {
         }
         return relations;
     }
+
+    /**
+     * 根据TopicId查询关系（去重，含属性）
+     */
+    public List<GraphRelation> getDistinctRelationsByTopicId(String topicId) {
+        List<GraphRelation> relations = graphRelationMapper.selectDistinctByTopicId(topicId);
+        // 填充属性
+        for (GraphRelation relation : relations) {
+            List<GraphRelationProperty> properties = graphRelationPropertyMapper.selectByRelationId(relation.getRelationId());
+            relation.setProperties(properties);
+        }
+        return relations;
+    }
 }
