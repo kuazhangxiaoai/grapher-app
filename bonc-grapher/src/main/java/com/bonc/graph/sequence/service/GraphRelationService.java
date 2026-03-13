@@ -50,6 +50,7 @@ public class GraphRelationService {
 
             GraphRelation relation = new GraphRelation();
             relation.setRelationHash(relationHash);
+            relation.setRelationTemplateName(relationDTO.getRelationTemplateName());
             relation.setRelationName(relationDTO.getRelationName());
             relation.setRelationType(relationDTO.getRelationType());
             relation.setRelationTrigger(relationDTO.getRelationTrigger());

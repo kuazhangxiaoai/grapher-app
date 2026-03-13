@@ -33,6 +33,7 @@ public class GraphResponseDTO {
     @Data
     public static class RelationResponseDTO {
         private String relationHash;
+        private String relationTemplateName;//关系模版名称
         private String relationName;
         private String relationType;
         private String relationTrigger;

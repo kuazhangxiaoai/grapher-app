@@ -12,6 +12,7 @@ import java.util.List;
 public class GraphRelation {
     private Long relationId;
     private String relationHash;
+    private String relationTemplateName;
     private String relationName;
     private String relationType;
     private String relationTrigger;
