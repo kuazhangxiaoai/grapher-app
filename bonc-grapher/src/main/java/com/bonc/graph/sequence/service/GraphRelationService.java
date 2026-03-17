@@ -157,4 +157,11 @@ public class GraphRelationService {
         }
         return relations;
     }
+
+    /**
+     * 根据articleId查询所有关系名称
+     */
+    public Object getRelationNamesByArticleId(String articleId, String relationName) {
+        return graphRelationMapper.getRelationNamesByArticleId(articleId,relationName);
+    }
 }

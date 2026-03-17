@@ -122,4 +122,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE t.rn = 1
     </select>
 
+    <select id="getRelationNamesByArticleId" resultType="String">
+        SELECT
+        t.relation_name
+        FROM (
+                SELECT
+                    *,
+                    ROW_NUMBER() OVER (PARTITION BY relation_hash ORDER BY create_time ASC) AS rn
+                FROM graph_relation
+                WHERE article_id = #{articleId} and relation_name like  '%'|| #{relationName}|| '%'
+             ) t
+        WHERE t.rn = 1
+    </select>
+
 </mapper>

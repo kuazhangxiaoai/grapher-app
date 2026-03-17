@@ -114,4 +114,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE t.rn = 1
     </select>
 
+    <select id="getNodeNamesByArticleId" resultType="String">
+        SELECT
+             t.node_name
+        FROM (
+                SELECT
+                    *,
+                    ROW_NUMBER() OVER (PARTITION BY node_hash ORDER BY create_time ASC) AS rn
+                FROM graph_node
+                WHERE article_id = #{articleId} and node_name like  '%'|| #{nodeName}|| '%'
+           ) t
+        WHERE t.rn = 1
+    </select>
 </mapper>

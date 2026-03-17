@@ -37,4 +37,11 @@ public interface GraphNodeMapper {
      * 根据fieldId查询节点列表（去重）
      */
     List<GraphNode> selectDistinctByFieldId(@Param("fieldId") String fieldId);
+
+    /**
+     * 根据articleId和名称查询节点名称
+     */
+    List<String> getNodeNamesByArticleId(@Param("articleId")String articleId, @Param("nodeName")String nodeName);
+
+
 }

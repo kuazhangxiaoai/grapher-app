@@ -150,4 +150,11 @@ public class GraphNodeService {
         }
         return nodes;
     }
+
+    /**
+     * 根据articleId查询所有节点名称
+     */
+    public List<String> getNodeNamesByArticleId(String articleId, String nodeName) {
+        return graphNodeMapper.getNodeNamesByArticleId(articleId,nodeName);
+    }
 }

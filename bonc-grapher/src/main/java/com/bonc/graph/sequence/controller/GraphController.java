@@ -5,6 +5,8 @@ import com.bonc.graph.sequence.dto.GraphResponseDTO;
 import com.bonc.graph.sequence.dto.GraphSaveDTO;
 import com.bonc.graph.sequence.dto.GraphSequenceDTO;
 import com.bonc.graph.sequence.service.GraphCoreService;
+import com.bonc.graph.sequence.service.GraphNodeService;
+import com.bonc.graph.sequence.service.GraphRelationService;
 import com.bonc.graph.sequence.service.GraphSequenceService;
 import com.bonc.graph.user.domain.Result;
 import com.bonc.graph.utils.HanLPSegmentUtil;
@@ -27,6 +29,10 @@ public class GraphController {
     private GraphSequenceService graphSequenceService;
     @Resource
     private GraphCoreService graphCoreService;
+    @Resource
+    private GraphNodeService graphNodeService;
+    @Resource
+    private GraphRelationService graphRelationService;
 
     // 1. 图谱构建-段落分词接口
     @PostMapping("/segmentSequence")
@@ -161,5 +167,42 @@ public class GraphController {
         return result;
     }
 
+    /**
+     * 8. 图谱构建-模糊查询节点名称接口
+     * @param articleId 文章ID
+     * @param nodeName 模糊名称
+     * @return
+     */
+    @GetMapping("/getNodeNamesByArticleId")
+    public Result getNamesByArticleId(@RequestParam String articleId,@RequestParam String nodeName) {
+        log.info("图谱构建-文章对应模糊查询节点名称接口:/graph_api/v1/sequence/getNodeNamesByArticleId");
+        Result result = new Result();
+        try {
+            result.successResult(graphNodeService.getNodeNamesByArticleId(articleId,nodeName));
+        }catch (Exception e){
+            result.failResult(e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    /**
+     * 9. 图谱构建-模糊查询关系名称接口
+     * @param articleId 文章ID
+     * @param relationName 模糊名称
+     * @return
+     */
+    @GetMapping("/getRelationNamesByArticleId")
+    public Result getRelationNamesByArticleId(@RequestParam String articleId,@RequestParam String relationName) {
+        log.info("图谱构建-文章对应模糊查询关系名称接口:/graph_api/v1/sequence/getRelationNamesByArticleId");
+        Result result = new Result();
+        try {
+            result.successResult(graphRelationService.getRelationNamesByArticleId(articleId,relationName));
+        }catch (Exception e){
+            result.failResult(e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
 
 }
