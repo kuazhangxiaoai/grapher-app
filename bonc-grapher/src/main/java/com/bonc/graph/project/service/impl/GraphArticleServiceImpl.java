@@ -70,6 +70,9 @@ public class GraphArticleServiceImpl implements GraphArticleService {
     public String addArticle(ArticleDto articleDto, String userName) {
         //查询是否有相同名称的图谱
         String oldArticleName = articleDto.getArticleName();
+        if(oldArticleName==null||"".equals(oldArticleName)){
+            throw new ValidationException("图谱名称不能为空，请输入图谱名称");
+        }
         String oldTopicId = articleDto.getTopicId();
         Article oldArticle= graphArticleMapper.selectByArticleName(oldArticleName,oldTopicId);
         if(oldArticle!=null){
@@ -92,60 +95,63 @@ public class GraphArticleServiceImpl implements GraphArticleService {
 
         // 处理文件上传
         MultipartFile file = articleDto.getMultipartFile();
-        if (file != null && !file.isEmpty()) { // 非空校验
-            // 获取原始文件名
-            String originalFilename = file.getOriginalFilename();
-            originalFilename = (originalFilename == null) ? "" : originalFilename;
-            // 获取文件后缀名
-            String suffix = getFileSuffix(originalFilename);
-            suffix = suffix.replace(".", "").toLowerCase();
-            // 生成新的唯一文件名
-            String newFileName = UUID.randomUUID().toString() + suffix;
-            // 拼接绝对路径
-            String filePath = FILE_SAVE + File.separator + newFileName;
+        if("0".equals(createMethod)){
+            if(file==null || file.isEmpty()){
+                throw new ValidationException("您选择的是自文本创建，文件不能为空");
+            }else{
+                // 获取原始文件名
+                String originalFilename = file.getOriginalFilename();
+                originalFilename = (originalFilename == null) ? "" : originalFilename;
+                // 获取文件后缀名
+                String suffix = getFileSuffix(originalFilename);
+                suffix = suffix.replace(".", "").toLowerCase();
+                // 生成新的唯一文件名
+                String newFileName = UUID.randomUUID().toString() + suffix;
+                // 拼接绝对路径
+                String filePath = FILE_SAVE + File.separator + newFileName;
 
-            if("txt".equals(suffix)){
-                //将txt转成pdf
-                try {
-                    // 生成 PDF 文件名
-                    String pdfFileName = UUID.randomUUID().toString() + ".pdf";
-                    String pdfPath = FILE_SAVE + File.separator + pdfFileName;
+                if("txt".equals(suffix)){
+                    //将txt转成pdf
+                    try {
+                        // 生成 PDF 文件名
+                        String pdfFileName = UUID.randomUUID().toString() + ".pdf";
+                        String pdfPath = FILE_SAVE + File.separator + pdfFileName;
 
-                    // 确保目录存在
-                    File pdfFile = new File(pdfPath);
-                    if (!pdfFile.getParentFile().exists()) {
-                        pdfFile.getParentFile().mkdirs();
+                        // 确保目录存在
+                        File pdfFile = new File(pdfPath);
+                        if (!pdfFile.getParentFile().exists()) {
+                            pdfFile.getParentFile().mkdirs();
+                        }
+
+                        // 执行转换pdf + 保存
+                        txtToPdfAndSave(file.getInputStream(), pdfPath);
+
+                        // 更新文件信息
+                        newFileName = pdfFileName;
+                        suffix = "pdf";
+
+                    } catch (Exception e) {
+                        throw new RuntimeException("TXT 转 PDF 失败：" + e.getMessage());
                     }
-
-                    // 执行转换pdf + 保存
-                    txtToPdfAndSave(file.getInputStream(), pdfPath);
-
-                    // 更新文件信息
-                    newFileName = pdfFileName;
-                    suffix = "pdf";
-
-                } catch (Exception e) {
-                    throw new RuntimeException("TXT 转 PDF 失败：" + e.getMessage());
-                }
-            }else {
-                //传入的是pdf 不用转
-                // 将文件写入到文件夹中
-                File destFile = new File(filePath);
-                try {
-                    if (!destFile.getParentFile().exists()) {
-                        destFile.getParentFile().mkdirs();
+                }else {
+                    //传入的是pdf 不用转
+                    // 将文件写入到文件夹中
+                    File destFile = new File(filePath);
+                    try {
+                        if (!destFile.getParentFile().exists()) {
+                            destFile.getParentFile().mkdirs();
+                        }
+                        file.transferTo(destFile);
+                    } catch (IOException e) {
+                        throw new RuntimeException("文件上传失败：" + e.getMessage());
                     }
-                    file.transferTo(destFile);
-                } catch (IOException e) {
-                    throw new RuntimeException("文件上传失败：" + e.getMessage());
                 }
+                article.setFileName(originalFilename); // 原始文件名
+                article.setFileUrl(newFileName);          // 文件相对路径
+                article.setFileType(suffix);           // 文件后缀
+                article.setFileSize(String.valueOf(file.getSize())); // 实际文件大小（字节）
             }
-            article.setFileName(originalFilename); // 原始文件名
-            article.setFileUrl(newFileName);          // 文件相对路径
-            article.setFileType(suffix);           // 文件后缀
-            article.setFileSize(String.valueOf(file.getSize())); // 实际文件大小（字节）
         }
-
         article.setTopicId(articleDto.getTopicId());
         article.setCreateBy(userName);
 
