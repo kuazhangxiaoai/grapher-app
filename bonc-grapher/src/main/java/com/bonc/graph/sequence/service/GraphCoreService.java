@@ -147,6 +147,7 @@ public class GraphCoreService {
         List<GraphResponseDTO.NodeResponseDTO> nodeDTOList = nodes.stream().map(node -> {
             GraphResponseDTO.NodeResponseDTO nodeDTO = new GraphResponseDTO.NodeResponseDTO();
             nodeDTO.setNodeHash(node.getNodeHash());
+            nodeDTO.setNodeTemplateId(node.getNodeTemplateId());
             nodeDTO.setNodeTemplateName(node.getNodeTemplateName());
             nodeDTO.setNodeName(node.getNodeName());
             nodeDTO.setNodeDescription(node.getNodeDescription());
@@ -166,6 +167,7 @@ public class GraphCoreService {
         List<GraphResponseDTO.RelationResponseDTO> relationDTOList = relations.stream().map(relation -> {
             GraphResponseDTO.RelationResponseDTO relationDTO = new GraphResponseDTO.RelationResponseDTO();
             relationDTO.setRelationHash(relation.getRelationHash());
+            relationDTO.setRelationTemplateId(relation.getRelationTemplateId());
             relationDTO.setRelationTemplateName(relation.getRelationTemplateName());
             relationDTO.setRelationName(relation.getRelationName());
             relationDTO.setRelationType(relation.getRelationType());

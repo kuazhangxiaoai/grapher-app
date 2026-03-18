@@ -12,7 +12,8 @@ import java.util.List;
 public class GraphRelation {
     private Long relationId;
     private String relationHash;
-    private String relationTemplateName;
+    private Long relationTemplateId;//关系模版ID
+    private String relationTemplateName;//关系模版名称
     private String relationName;
     private String relationType;
     private String relationTrigger;

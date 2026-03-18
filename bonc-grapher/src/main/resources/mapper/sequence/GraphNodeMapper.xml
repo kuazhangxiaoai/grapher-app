@@ -7,6 +7,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap id="BaseResultMap" type="com.bonc.graph.sequence.domain.GraphNode">
         <id column="node_id" property="nodeId"/>
         <result column="node_hash" property="nodeHash"/>
+        <result column="node_template_id" property="nodeTemplateId"/>
         <result column="node_template_name" property="nodeTemplateName"/>
         <result column="node_name" property="nodeName"/>
         <result column="node_description" property="nodeDescription"/>
@@ -21,13 +22,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <insert id="batchInsert">
         INSERT INTO graph_node (
-        node_hash, node_template_name, node_name, node_description, node_color,
+        node_hash, node_template_id, node_template_name, node_name, node_description, node_color,
         create_time, update_time, field_id, topic_id,
         article_id, sequence_id
         ) VALUES
         <foreach collection="nodes" item="item" separator=",">
             (
-            #{item.nodeHash}, #{item.nodeTemplateName}, #{item.nodeName}, #{item.nodeDescription}, #{item.nodeColor},
+            #{item.nodeHash}, #{item.nodeTemplateId}, #{item.nodeTemplateName}, #{item.nodeName}, #{item.nodeDescription}, #{item.nodeColor},
             #{item.createTime}, #{item.updateTime}, #{item.fieldId}, #{item.topicId},
             #{item.articleId}, #{item.sequenceId}
             )
@@ -38,6 +39,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         DELETE FROM graph_node WHERE sequence_id = #{sequenceId}
     </delete>
 
+    <delete id="deleteByNodeTemplateId">
+        DELETE FROM graph_node WHERE node_template_id = #{nodeTemplateId}
+    </delete>
+
     <select id="selectBySequenceId" resultMap="BaseResultMap">
         SELECT * FROM graph_node WHERE sequence_id = #{sequenceId}
     </select>
@@ -46,6 +51,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT
             t.node_id,
             t.node_hash,
+            t.node_template_id,
             t.node_template_name,
             t.node_name,
             t.node_description,
@@ -70,6 +76,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT
             t.node_id,
             t.node_hash,
+            t.node_template_id,
             t.node_template_name,
             t.node_name,
             t.node_description,
@@ -94,6 +101,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT
             t.node_id,
             t.node_hash,
+            t.node_template_id,
             t.node_template_name,
             t.node_name,
             t.node_description,

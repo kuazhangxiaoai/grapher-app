@@ -27,4 +27,9 @@ public interface GraphNodePropertyMapper {
      * 根据sequenceId删除节点属性（先删节点再删属性时用）
      */
     int deleteBySequenceId(@Param("sequenceId") String sequenceId);
+
+    /**
+     * 根据nodeTemplateId删除节点属性（先删节点再删属性时用）
+     */
+    int deleteByNodeTemplateId(@Param("nodeTemplateId") Long nodeTemplateId);
 }

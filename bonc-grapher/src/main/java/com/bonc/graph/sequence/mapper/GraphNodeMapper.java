@@ -19,6 +19,11 @@ public interface GraphNodeMapper {
     int deleteBySequenceId(@Param("sequenceId") String sequenceId);
 
     /**
+     * 根据nodeTemplateId删除节点
+     */
+    int deleteByNodeTemplateId(@Param("nodeTemplateId") Long nodeTemplateId);
+
+    /**
      * 根据sequenceId查询节点列表
      */
     List<GraphNode> selectBySequenceId(@Param("sequenceId") String sequenceId);

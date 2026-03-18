@@ -29,7 +29,8 @@ public class GraphSaveDTO {
     @Data
     public static class NodeDTO {
         private String nodeHash;
-        private String nodeTemplateName;//节点类型
+        private Long nodeTemplateId;//节点模版ID
+        private String nodeTemplateName;//节点模版名称
         private String nodeName;
         private String nodeDescription;
         private String nodeColor;
@@ -42,6 +43,7 @@ public class GraphSaveDTO {
      */
     @Data
     public static class RelationDTO {
+        private Long relationTemplateId;//关系模版ID
         private String relationTemplateName;//关系模版名称
         private String relationName;
         private String relationType;

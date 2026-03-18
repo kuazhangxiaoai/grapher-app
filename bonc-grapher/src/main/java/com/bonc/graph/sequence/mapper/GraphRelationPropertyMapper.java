@@ -27,4 +27,10 @@ public interface GraphRelationPropertyMapper {
      * 根据sequenceId删除关系属性
      */
     int deleteBySequenceId(@Param("sequenceId") String sequenceId);
+
+    /**
+     * 根据relationTemplateId删除关系属性
+     */
+    int deleteByRelationTemplateId(@Param("relationTemplateId") Long relationTemplateId);
+
 }

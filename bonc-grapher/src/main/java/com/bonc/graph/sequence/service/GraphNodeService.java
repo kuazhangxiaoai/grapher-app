@@ -5,7 +5,8 @@ import com.bonc.graph.sequence.domain.GraphNodeProperty;
 import com.bonc.graph.sequence.dto.GraphSaveDTO;
 import com.bonc.graph.sequence.mapper.GraphNodeMapper;
 import com.bonc.graph.sequence.mapper.GraphNodePropertyMapper;
-import com.bonc.graph.utils.HashUtil;
+import com.bonc.graph.template.domain.GraphNodeTemplate;
+import com.bonc.graph.template.mapper.GraphNodeTemplateMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,8 @@ public class GraphNodeService {
     private GraphNodeMapper graphNodeMapper;
     @Resource
     private GraphNodePropertyMapper graphNodePropertyMapper;
+    @Resource
+    private GraphNodeTemplateMapper nodeTemplateMapper;
 
     /**
      * 批量保存节点及属性
@@ -44,6 +47,7 @@ public class GraphNodeService {
             // 构建节点
             GraphNode node = new GraphNode();
             node.setNodeHash(nodeDTO.getNodeHash());
+            node.setNodeTemplateId(nodeDTO.getNodeTemplateId());
             node.setNodeTemplateName(nodeDTO.getNodeTemplateName());
             node.setNodeName(nodeDTO.getNodeName());
             node.setNodeDescription(nodeDTO.getNodeDescription());
@@ -102,52 +106,152 @@ public class GraphNodeService {
      * 根据sequenceId查询节点（含属性）
      */
     public List<GraphNode> getNodesBySequenceId(String sequenceId) {
+        // 1. 查询原始节点列表
         List<GraphNode> nodes = graphNodeMapper.selectBySequenceId(sequenceId);
-        // 填充属性
+        // 用于存储最终返回的有效节点
+        List<GraphNode> validNodes = new ArrayList<>();
+
+        // 2. 第一步：过滤+更新模板信息（先处理无效节点，避免后续无效查询）
         for (GraphNode node : nodes) {
-            List<GraphNodeProperty> properties = graphNodePropertyMapper.selectByNodeId(node.getNodeId());
-            node.setProperties(properties);
+            Long nodeTemplateId = node.getNodeTemplateId();
+            // 过滤条件：nodeTemplateId为空 或 模板查询不到
+            if (nodeTemplateId == null) {
+                continue;
+            }
+            GraphNodeTemplate nodeTemplate = nodeTemplateMapper.selectById(nodeTemplateId);
+            if (nodeTemplate == null) {
+                continue;
+            }
+
+            // 模板存在，更新内存中节点的名称和颜色
+            node.setNodeTemplateName(nodeTemplate.getNodeTemplateName());
+            node.setNodeColor(nodeTemplate.getNodeTemplateColor());
+            // 仅将有效节点加入待填充属性的列表
+            validNodes.add(node);
         }
-        return nodes;
+
+        // 3. 第二步：仅为有效节点填充属性（减少无效的数据库查询）
+        for (GraphNode validNode : validNodes) {
+            List<GraphNodeProperty> properties = graphNodePropertyMapper.selectByNodeId(validNode.getNodeId());
+            validNode.setProperties(properties);
+        }
+
+        // 4. 返回最终处理后的有效节点列表
+        return validNodes;
     }
 
     /**
      * 根据articleId查询节点（去重，含属性）
      */
     public List<GraphNode> getDistinctNodesByArticleId(String articleId) {
+        // 1. 查询原始节点列表
         List<GraphNode> nodes = graphNodeMapper.selectDistinctByArticleId(articleId);
-        // 填充属性
+        // 用于存储最终返回的有效节点
+        List<GraphNode> validNodes = new ArrayList<>();
+
+        // 2. 第一步：过滤+更新模板信息（先处理无效节点，避免后续无效查询）
         for (GraphNode node : nodes) {
-            List<GraphNodeProperty> properties = graphNodePropertyMapper.selectByNodeId(node.getNodeId());
-            node.setProperties(properties);
+            Long nodeTemplateId = node.getNodeTemplateId();
+            // 过滤条件：nodeTemplateId为空 或 模板查询不到
+            if (nodeTemplateId == null) {
+                continue;
+            }
+            GraphNodeTemplate nodeTemplate = nodeTemplateMapper.selectById(nodeTemplateId);
+            if (nodeTemplate == null) {
+                continue;
+            }
+
+            // 模板存在，更新内存中节点的名称和颜色
+            node.setNodeTemplateName(nodeTemplate.getNodeTemplateName());
+            node.setNodeColor(nodeTemplate.getNodeTemplateColor());
+            // 仅将有效节点加入待填充属性的列表
+            validNodes.add(node);
         }
-        return nodes;
+
+        // 3. 第二步：仅为有效节点填充属性（减少无效的数据库查询）
+        for (GraphNode validNode : validNodes) {
+            List<GraphNodeProperty> properties = graphNodePropertyMapper.selectByNodeId(validNode.getNodeId());
+            validNode.setProperties(properties);
+        }
+
+        // 4. 返回最终处理后的有效节点列表
+        return validNodes;
     }
 
 
     /**
-     * 根据TopicId查询节点（去重，含属性）
+     * 根据topicId查询节点（去重，含属性）
      */
     public List<GraphNode> getDistinctNodesByTopicId(String topicId) {
+        // 1. 查询原始节点列表
         List<GraphNode> nodes = graphNodeMapper.selectDistinctByTopicId(topicId);
-        // 填充属性
+        // 用于存储最终返回的有效节点
+        List<GraphNode> validNodes = new ArrayList<>();
+
+        // 2. 第一步：过滤+更新模板信息（先处理无效节点，避免后续无效查询）
         for (GraphNode node : nodes) {
-            List<GraphNodeProperty> properties = graphNodePropertyMapper.selectByNodeId(node.getNodeId());
-            node.setProperties(properties);
+            Long nodeTemplateId = node.getNodeTemplateId();
+            // 过滤条件：nodeTemplateId为空 或 模板查询不到
+            if (nodeTemplateId == null) {
+                continue;
+            }
+            GraphNodeTemplate nodeTemplate = nodeTemplateMapper.selectById(nodeTemplateId);
+            if (nodeTemplate == null) {
+                continue;
+            }
+
+            // 模板存在，更新内存中节点的名称和颜色
+            node.setNodeTemplateName(nodeTemplate.getNodeTemplateName());
+            node.setNodeColor(nodeTemplate.getNodeTemplateColor());
+            // 仅将有效节点加入待填充属性的列表
+            validNodes.add(node);
         }
-        return nodes;
+
+        // 3. 第二步：仅为有效节点填充属性（减少无效的数据库查询）
+        for (GraphNode validNode : validNodes) {
+            List<GraphNodeProperty> properties = graphNodePropertyMapper.selectByNodeId(validNode.getNodeId());
+            validNode.setProperties(properties);
+        }
+
+        // 4. 返回最终处理后的有效节点列表
+        return validNodes;
     }
 
     /**
-     * 根据TopicId查询节点（去重，含属性）
+     * 根据fieldId查询节点（去重，含属性）
      */
     public List<GraphNode> getDistinctNodesByFieldId(String fieldId) {
+        // 1. 查询原始节点列表
         List<GraphNode> nodes = graphNodeMapper.selectDistinctByFieldId(fieldId);
-        // 填充属性
+        // 用于存储最终返回的有效节点
+        List<GraphNode> validNodes = new ArrayList<>();
+
+        // 2. 第一步：过滤+更新模板信息（先处理无效节点，避免后续无效查询）
         for (GraphNode node : nodes) {
-            List<GraphNodeProperty> properties = graphNodePropertyMapper.selectByNodeId(node.getNodeId());
-            node.setProperties(properties);
+            Long nodeTemplateId = node.getNodeTemplateId();
+            // 过滤条件：nodeTemplateId为空 或 模板查询不到
+            if (nodeTemplateId == null) {
+                continue;
+            }
+            GraphNodeTemplate nodeTemplate = nodeTemplateMapper.selectById(nodeTemplateId);
+            if (nodeTemplate == null) {
+                continue;
+            }
+
+            // 模板存在，更新内存中节点的名称和颜色
+            node.setNodeTemplateName(nodeTemplate.getNodeTemplateName());
+            node.setNodeColor(nodeTemplate.getNodeTemplateColor());
+            // 仅将有效节点加入待填充属性的列表
+            validNodes.add(node);
         }
-        return nodes;
+
+        // 3. 第二步：仅为有效节点填充属性（减少无效的数据库查询）
+        for (GraphNode validNode : validNodes) {
+            List<GraphNodeProperty> properties = graphNodePropertyMapper.selectByNodeId(validNode.getNodeId());
+            validNode.setProperties(properties);
+        }
+
+        // 4. 返回最终处理后的有效节点列表
+        return validNodes;
     }
 }

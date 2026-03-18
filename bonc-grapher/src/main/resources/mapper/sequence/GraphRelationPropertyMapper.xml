@@ -41,4 +41,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE relation_id IN (SELECT relation_id FROM graph_relation WHERE sequence_id = #{sequenceId})
     </delete>
 
+    <delete id="deleteByRelationTemplateId">
+        DELETE FROM graph_relation_property
+        WHERE relation_id IN (SELECT relation_id FROM graph_relation WHERE relation_template_id = #{relationTemplateId})
+    </delete>
+
 </mapper>

@@ -1,5 +1,9 @@
 package com.bonc.graph.template.service.impl;
 
+import com.bonc.graph.sequence.mapper.GraphNodeMapper;
+import com.bonc.graph.sequence.mapper.GraphNodePropertyMapper;
+import com.bonc.graph.sequence.mapper.GraphRelationMapper;
+import com.bonc.graph.sequence.mapper.GraphRelationPropertyMapper;
 import com.bonc.graph.template.domain.GraphNodeTemplate;
 import com.bonc.graph.template.domain.GraphNodeTemplateProperty;
 import com.bonc.graph.template.domain.GraphRelationTemplate;
@@ -28,11 +32,19 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
     @Resource
     private GraphNodeTemplateMapper nodeTemplateMapper;
     @Resource
-    private GraphNodeTemplatePropertyMapper nodePropertyMapper;
+    private GraphNodeTemplatePropertyMapper nodeTemplatePropertyMapper;
     @Resource
     private GraphRelationTemplateMapper relationTemplateMapper;
     @Resource
-    private GraphRelationTemplatePropertyMapper relationPropertyMapper;
+    private GraphRelationTemplatePropertyMapper relationTemplatePropertyMapper;
+    @Resource
+    private GraphNodeMapper nodeMapper;
+    @Resource
+    private GraphNodePropertyMapper nodePropertyMapper;
+    @Resource
+    private GraphRelationMapper relationMapper;
+    @Resource
+    private GraphRelationPropertyMapper relationPropertyMapper;
 
 
     // 1. 本体设计-节点/关系模版查询接口
@@ -42,7 +54,7 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
         List<GraphNodeTemplate> nodeTemplates = nodeTemplateMapper.selectByTopicId(topicId);
         if (!CollectionUtils.isEmpty(nodeTemplates)) {
             nodeTemplates.forEach(node -> {
-                List<GraphNodeTemplateProperty> properties = nodePropertyMapper.selectByNodeTemplateId(node.getNodeTemplateId());
+                List<GraphNodeTemplateProperty> properties = nodeTemplatePropertyMapper.selectByNodeTemplateId(node.getNodeTemplateId());
                 node.setProperties(properties);
             });
         }
@@ -51,7 +63,7 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
         List<GraphRelationTemplate> relationTemplates = relationTemplateMapper.selectByTopicId(topicId);
         if (!CollectionUtils.isEmpty(relationTemplates)) {
             relationTemplates.forEach(relation -> {
-                List<GraphRelationTemplateProperty> properties = relationPropertyMapper.selectByRelationTemplateId(relation.getRelationTemplateId());
+                List<GraphRelationTemplateProperty> properties = relationTemplatePropertyMapper.selectByRelationTemplateId(relation.getRelationTemplateId());
                 relation.setProperties(properties);
             });
         }
@@ -87,7 +99,7 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
                 template.setNodeTemplateId(dto.getNodeTemplateId());
                 nodeTemplateMapper.updateById(template);
                 // 逻辑删除原有属性（保证属性全量更新）
-                nodePropertyMapper.updateDeleteFlagByNodeTemplateId(dto.getNodeTemplateId(), "1");
+                nodeTemplatePropertyMapper.updateDeleteFlagByNodeTemplateId(dto.getNodeTemplateId(), "1");
             }
 
             // 3. 处理属性（新增/修改都需要重新插入属性）
@@ -95,7 +107,7 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
                 // 确定属性关联的模板ID（新增用插入后的ID，修改用传入的ID）
                 Long bindTemplateId = dto.getNodeTemplateId() == null ? template.getNodeTemplateId() : dto.getNodeTemplateId();
                 List<GraphNodeTemplateProperty> properties = buildNodeProperties(dto.getProperties(), bindTemplateId);
-                nodePropertyMapper.batchInsert(properties);
+                nodeTemplatePropertyMapper.batchInsert(properties);
             }
         }
     }
@@ -126,14 +138,14 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
                 template.setRelationTemplateId(dto.getRelationTemplateId());
                 relationTemplateMapper.updateById(template);
                 // 逻辑删除原有属性
-                relationPropertyMapper.updateDeleteFlagByRelationTemplateId(dto.getRelationTemplateId(), "1");
+                relationTemplatePropertyMapper.updateDeleteFlagByRelationTemplateId(dto.getRelationTemplateId(), "1");
             }
 
             // 3. 处理属性（新增/修改都需要重新插入属性）
             if (!CollectionUtils.isEmpty(dto.getProperties())) {
                 Long bindTemplateId = dto.getRelationTemplateId() == null ? template.getRelationTemplateId() : dto.getRelationTemplateId();
                 List<GraphRelationTemplateProperty> properties = buildRelationProperties(dto.getProperties(), bindTemplateId);
-                relationPropertyMapper.batchInsert(properties);
+                relationTemplatePropertyMapper.batchInsert(properties);
             }
         }
     }
@@ -144,14 +156,20 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
         // 更新节点模版删除标识
         nodeTemplateMapper.updateDeleteFlag(nodeTemplateId, "1");
         // 更新属性删除标识
-        nodePropertyMapper.updateDeleteFlagByNodeTemplateId(nodeTemplateId, "1");
+        nodeTemplatePropertyMapper.updateDeleteFlagByNodeTemplateId(nodeTemplateId, "1");
+        //根据nodeTemplateId删除节点及属性
+        nodePropertyMapper.deleteByNodeTemplateId(nodeTemplateId);
+        nodeMapper.deleteByNodeTemplateId(nodeTemplateId);
     }
 
     // 5. 本体设计-关系模版删除接口（逻辑删除）
     @Transactional(rollbackFor = Exception.class)
     public void deleteRelationTemplate(Long relationTemplateId) {
         relationTemplateMapper.updateDeleteFlag(relationTemplateId, "1");
-        relationPropertyMapper.updateDeleteFlagByRelationTemplateId(relationTemplateId, "1");
+        relationTemplatePropertyMapper.updateDeleteFlagByRelationTemplateId(relationTemplateId, "1");
+        //根据nodeTemplateId删除节点及属性
+        relationPropertyMapper.deleteByRelationTemplateId(relationTemplateId);
+        relationMapper.deleteByRelationTemplateId(relationTemplateId);
     }
 
     // 6. 本体设计-组件库查询接口
@@ -161,7 +179,7 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
         List<GraphNodeTemplate> nodeTemplates = nodeTemplateMapper.selectLibraryByLikeName(templateName);
         if (!CollectionUtils.isEmpty(nodeTemplates)) {
             nodeTemplates.forEach(node -> {
-                List<GraphNodeTemplateProperty> properties = nodePropertyMapper.selectByNodeTemplateId(node.getNodeTemplateId());
+                List<GraphNodeTemplateProperty> properties = nodeTemplatePropertyMapper.selectByNodeTemplateId(node.getNodeTemplateId());
                 node.setProperties(properties);
             });
         }
@@ -169,7 +187,7 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
         List<GraphRelationTemplate> relationTemplates = relationTemplateMapper.selectLibraryByLikeName(templateName);
         if (!CollectionUtils.isEmpty(relationTemplates)) {
             relationTemplates.forEach(relation -> {
-                List<GraphRelationTemplateProperty> properties = relationPropertyMapper.selectByRelationTemplateId(relation.getRelationTemplateId());
+                List<GraphRelationTemplateProperty> properties = relationTemplatePropertyMapper.selectByRelationTemplateId(relation.getRelationTemplateId());
                 relation.setProperties(properties);
             });
         }
@@ -204,7 +222,7 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
             nodeTemplateMapper.insert(newNode);
 
             // 复制属性
-            List<GraphNodeTemplateProperty> libraryProperties = nodePropertyMapper.selectByNodeTemplateId(libraryNode.getNodeTemplateId());
+            List<GraphNodeTemplateProperty> libraryProperties = nodeTemplatePropertyMapper.selectByNodeTemplateId(libraryNode.getNodeTemplateId());
             if (!CollectionUtils.isEmpty(libraryProperties)) {
                 List<GraphNodeTemplateProperty> newProperties = new ArrayList<>();
                 libraryProperties.forEach(prop -> {
@@ -217,7 +235,7 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
                     newProp.setIsDeleteFlag("0");
                     newProperties.add(newProp);
                 });
-                nodePropertyMapper.batchInsert(newProperties);
+                nodeTemplatePropertyMapper.batchInsert(newProperties);
             }
         } else if ("relation".equals(dto.getTemplateType())) {
             // 关系类型：逻辑同节点
@@ -242,7 +260,7 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
             relationTemplateMapper.insert(newRelation);
 
             // 复制属性
-            List<GraphRelationTemplateProperty> libraryProperties = relationPropertyMapper.selectByRelationTemplateId(libraryRelation.getRelationTemplateId());
+            List<GraphRelationTemplateProperty> libraryProperties = relationTemplatePropertyMapper.selectByRelationTemplateId(libraryRelation.getRelationTemplateId());
             if (!CollectionUtils.isEmpty(libraryProperties)) {
                 List<GraphRelationTemplateProperty> newProperties = new ArrayList<>();
                 libraryProperties.forEach(prop -> {
@@ -255,7 +273,7 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
                     newProp.setIsDeleteFlag("0");
                     newProperties.add(newProp);
                 });
-                relationPropertyMapper.batchInsert(newProperties);
+                relationTemplatePropertyMapper.batchInsert(newProperties);
             }
         } else {
             throw new RuntimeException("模版类型错误，仅支持node/relation");
@@ -272,7 +290,7 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
     // 2-7. 图谱构建-节点模版属性查询接口
     public List<GraphNodeTemplateProperty> queryNodeTemplateProperties(Long nodeTemplateId) {
         // 查询节点模版属性
-        List<GraphNodeTemplateProperty> properties = nodePropertyMapper.selectByNodeTemplateId(nodeTemplateId);
+        List<GraphNodeTemplateProperty> properties = nodeTemplatePropertyMapper.selectByNodeTemplateId(nodeTemplateId);
         return properties;
     }
 
@@ -286,7 +304,7 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
     // 2-9. 图谱构建-根据relationTemplateId查询关系属性列表接口
     public List<GraphRelationTemplateProperty> queryRelationTemplateProperties(Long relationTemplateId) {
         // 查询节点模版属性
-        List<GraphRelationTemplateProperty> properties = relationPropertyMapper.selectByRelationTemplateId(relationTemplateId);
+        List<GraphRelationTemplateProperty> properties = relationTemplatePropertyMapper.selectByRelationTemplateId(relationTemplateId);
         return properties;
     }
 

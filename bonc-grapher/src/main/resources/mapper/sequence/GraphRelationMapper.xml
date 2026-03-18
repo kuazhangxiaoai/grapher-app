@@ -7,6 +7,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap id="BaseResultMap" type="com.bonc.graph.sequence.domain.GraphRelation">
         <id column="relation_id" property="relationId"/>
         <result column="relation_hash" property="relationHash"/>
+        <result column="relation_template_id" property="relationTemplateId"/>
         <result column="relation_template_name" property="relationTemplateName"/>
         <result column="relation_name" property="relationName"/>
         <result column="relation_type" property="relationType"/>
@@ -23,13 +24,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <insert id="batchInsert">
         INSERT INTO graph_relation (
-        relation_hash, relation_template_name, relation_name, relation_type, relation_trigger,
+        relation_hash, relation_template_id, relation_template_name, relation_name, relation_type, relation_trigger,
         start_node_hash, end_node_hash, create_time, update_time,
         field_id, topic_id, article_id, sequence_id
         ) VALUES
         <foreach collection="relations" item="item" separator=",">
             (
-            #{item.relationHash}, #{item.relationTemplateName}, #{item.relationName}, #{item.relationType}, #{item.relationTrigger},
+            #{item.relationHash}, #{item.relationTemplateId}, #{item.relationTemplateName}, #{item.relationName}, #{item.relationType}, #{item.relationTrigger},
             #{item.startNodeHash}, #{item.endNodeHash}, #{item.createTime}, #{item.updateTime},
             #{item.fieldId}, #{item.topicId}, #{item.articleId}, #{item.sequenceId}
             )
@@ -40,6 +41,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         DELETE FROM graph_relation WHERE sequence_id = #{sequenceId}
     </delete>
 
+    <delete id="deleteByRelationTemplateId">
+        DELETE FROM graph_relation WHERE relation_template_id = #{relationTemplateId}
+    </delete>
+
     <select id="selectBySequenceId" resultMap="BaseResultMap">
         SELECT * FROM graph_relation WHERE sequence_id = #{sequenceId}
     </select>
@@ -48,6 +53,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT
             t.relation_id,
             t.relation_hash,
+            t.relation_template_id,
             t.relation_template_name,
             t.relation_name,
             t.relation_type,
@@ -74,6 +80,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT
             t.relation_id,
             t.relation_hash,
+            t.relation_template_id,
             t.relation_template_name,
             t.relation_name,
             t.relation_type,
@@ -100,6 +107,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT
             t.relation_id,
             t.relation_hash,
+            t.relation_template_id,
             t.relation_template_name,
             t.relation_name,
             t.relation_type,
