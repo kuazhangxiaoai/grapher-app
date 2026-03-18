@@ -42,4 +42,9 @@ public interface GraphRelationMapper {
      * 根据fieldId查询关系列表（去重）
      */
     List<GraphRelation> selectDistinctByFieldId(@Param("fieldId") String fieldId);
+
+    /**
+     * 根据articleId和名称查询关系名称
+     */
+    List<String> getRelationNamesByArticleId(@Param("articleId")String articleId, @Param("relationName")String relationName);
 }

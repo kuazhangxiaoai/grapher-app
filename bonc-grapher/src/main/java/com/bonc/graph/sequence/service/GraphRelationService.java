@@ -263,4 +263,11 @@ public class GraphRelationService {
         // 4. 返回最终处理后的有效节点列表
         return validRelations;
     }
+
+    /**
+     * 根据articleId查询所有关系名称
+     */
+    public Object getRelationNamesByArticleId(String articleId, String relationName) {
+        return graphRelationMapper.getRelationNamesByArticleId(articleId,relationName);
+    }
 }
