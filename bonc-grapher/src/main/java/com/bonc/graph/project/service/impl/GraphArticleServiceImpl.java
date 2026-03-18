@@ -11,15 +11,20 @@ import com.bonc.graph.sequence.mapper.GraphSequenceMapper;
 import com.bonc.graph.sequence.service.GraphNodeService;
 import com.bonc.graph.sequence.service.GraphRelationService;
 import com.bonc.graph.sequence.service.GraphSequenceService;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
 import javax.annotation.Resource;
 import javax.validation.ValidationException;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -63,13 +68,14 @@ public class GraphArticleServiceImpl implements GraphArticleService {
     /*新增图谱*/
     @Override
     public String addArticle(ArticleDto articleDto, String userName) {
-
+        //查询是否有相同名称的图谱
         String oldArticleName = articleDto.getArticleName();
         String oldTopicId = articleDto.getTopicId();
         Article oldArticle= graphArticleMapper.selectByArticleName(oldArticleName,oldTopicId);
         if(oldArticle!=null){
             throw new ValidationException("该专题下已存在名称为【" + oldArticleName + "】的图谱，请勿重复创建");
         }
+        //新增图谱
         Article article = new Article();
         // 图谱id
         String articleId = UUID.randomUUID().toString();
@@ -84,41 +90,61 @@ public class GraphArticleServiceImpl implements GraphArticleService {
         createMethod = (createMethod == null) ? "" : createMethod.trim();
         article.setCreateMethod(createMethod);
 
-
         // 处理文件上传
         MultipartFile file = articleDto.getMultipartFile();
         if (file != null && !file.isEmpty()) { // 非空校验
-            // 获取文件保存基础路径
-            String fileSavePath = RuoYiConfig.getUploadPath();
             // 获取原始文件名
             String originalFilename = file.getOriginalFilename();
             originalFilename = (originalFilename == null) ? "" : originalFilename;
-
             // 获取文件后缀名
             String suffix = getFileSuffix(originalFilename);
-
+            suffix = suffix.replace(".", "").toLowerCase();
             // 生成新的唯一文件名
             String newFileName = UUID.randomUUID().toString() + suffix;
             // 拼接绝对路径
             String filePath = FILE_SAVE + File.separator + newFileName;
 
-            // 将文件写入到文件夹中
-            File destFile = new File(filePath);
-            try {
-                if (!destFile.getParentFile().exists()) {
-                    destFile.getParentFile().mkdirs();
-                }
-                file.transferTo(destFile);
-            } catch (IOException e) {
-                throw new RuntimeException("文件上传失败：" + e.getMessage());
-            }
+            if("txt".equals(suffix)){
+                //将txt转成pdf
+                try {
+                    // 生成 PDF 文件名
+                    String pdfFileName = UUID.randomUUID().toString() + ".pdf";
+                    String pdfPath = FILE_SAVE + File.separator + pdfFileName;
 
+                    // 确保目录存在
+                    File pdfFile = new File(pdfPath);
+                    if (!pdfFile.getParentFile().exists()) {
+                        pdfFile.getParentFile().mkdirs();
+                    }
+
+                    // 执行转换pdf + 保存
+                    txtToPdfAndSave(file.getInputStream(), pdfPath);
+
+                    // 更新文件信息
+                    newFileName = pdfFileName;
+                    suffix = "pdf";
+
+                } catch (Exception e) {
+                    throw new RuntimeException("TXT 转 PDF 失败：" + e.getMessage());
+                }
+            }else {
+                //传入的是pdf 不用转
+                // 将文件写入到文件夹中
+                File destFile = new File(filePath);
+                try {
+                    if (!destFile.getParentFile().exists()) {
+                        destFile.getParentFile().mkdirs();
+                    }
+                    file.transferTo(destFile);
+                } catch (IOException e) {
+                    throw new RuntimeException("文件上传失败：" + e.getMessage());
+                }
+            }
             article.setFileName(originalFilename); // 原始文件名
             article.setFileUrl(newFileName);          // 文件相对路径
             article.setFileType(suffix);           // 文件后缀
             article.setFileSize(String.valueOf(file.getSize())); // 实际文件大小（字节）
         }
-
 
         article.setTopicId(articleDto.getTopicId());
         article.setCreateBy(userName);
@@ -172,12 +198,8 @@ public class GraphArticleServiceImpl implements GraphArticleService {
                 }
             }
         }
-
-
         return graphArticleMapper.deleteArticle(article.getArticleId());
     }
-
-
 
     /**安全文件后缀名*/
     private String getFileSuffix(String originalFilename) {
@@ -189,5 +211,37 @@ public class GraphArticleServiceImpl implements GraphArticleService {
             return "";
         }
         return originalFilename.substring(lastDotIndex);
+    }
+
+    public static void txtToPdfAndSave(InputStream inputStream, String outputPath) throws Exception {
+        // 创建 PDF
+        PdfWriter writer = new PdfWriter(outputPath);
+        PdfDocument pdf = new PdfDocument(writer);
+        Document document = new Document(pdf);
+
+        // 解决中文乱码
+        URL resource = Thread.currentThread()
+                .getContextClassLoader()
+                .getResource("fonts/STFANGSO.TTF");
+
+        if (resource == null) {
+            throw new RuntimeException("字体文件没找到！");
+        }
+
+        String fontPath = resource.toURI().getPath();
+
+        PdfFont font = PdfFontFactory.createFont(fontPath, "Identity-H");
+        document.setFont(font);
+
+        // 读取 txt
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+            document.add(new Paragraph(line));
+        }
+
+        reader.close();
+        document.close();
     }
 }
