@@ -174,11 +174,19 @@ public class GraphController {
      * @return
      */
     @GetMapping("/getNodeNamesByArticleId")
-    public Result getNamesByArticleId(@RequestParam String articleId,@RequestParam String nodeName) {
+    public Result getNamesByArticleId(@RequestParam String articleId,@RequestParam String nodeName,@RequestParam  String nodeTemplateId) {
         log.info("图谱构建-文章对应模糊查询节点名称接口:/graph_api/v1/sequence/getNodeNamesByArticleId");
         Result result = new Result();
         try {
-            result.successResult(graphNodeService.getNodeNamesByArticleId(articleId,nodeName));
+            Long nodeTemplateIdLong = null;
+            if (StringUtils.hasText(nodeTemplateId)) { // 非空且非空白字符串
+                try {
+                    nodeTemplateIdLong = Long.parseLong(nodeTemplateId.trim());
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("nodeTemplateId必须是数字格式，当前值：" + nodeTemplateId);
+                }
+            }
+            result.successResult(graphNodeService.getNodeNamesByArticleId(articleId,nodeName,nodeTemplateIdLong));
         }catch (Exception e){
             result.failResult(e.getMessage());
             e.printStackTrace();
@@ -193,11 +201,19 @@ public class GraphController {
      * @return
      */
     @GetMapping("/getRelationNamesByArticleId")
-    public Result getRelationNamesByArticleId(@RequestParam String articleId,@RequestParam String relationName) {
+    public Result getRelationNamesByArticleId(@RequestParam String articleId,@RequestParam String relationName,@RequestParam  String relationTemplateId) {
         log.info("图谱构建-文章对应模糊查询关系名称接口:/graph_api/v1/sequence/getRelationNamesByArticleId");
         Result result = new Result();
         try {
-            result.successResult(graphRelationService.getRelationNamesByArticleId(articleId,relationName));
+            Long relationTemplateIdLong = null;
+            if (StringUtils.hasText(relationTemplateId)) { // 非空且非空白字符串
+                try {
+                    relationTemplateIdLong = Long.parseLong(relationTemplateId.trim());
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("nodeTemplateId必须是数字格式，当前值：" + relationTemplateId);
+                }
+            }
+            result.successResult(graphRelationService.getRelationNamesByArticleId(articleId,relationName,relationTemplateIdLong));
         }catch (Exception e){
             result.failResult(e.getMessage());
             e.printStackTrace();

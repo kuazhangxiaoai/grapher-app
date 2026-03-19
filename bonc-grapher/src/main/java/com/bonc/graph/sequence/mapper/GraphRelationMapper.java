@@ -46,5 +46,5 @@ public interface GraphRelationMapper {
     /**
      * 根据articleId和名称查询关系名称
      */
-    List<String> getRelationNamesByArticleId(@Param("articleId")String articleId, @Param("relationName")String relationName);
+    List<String> getRelationNamesByArticleId(@Param("articleId")String articleId, @Param("relationName")String relationName,@Param("relationTemplateId") Long relationTemplateId);
 }

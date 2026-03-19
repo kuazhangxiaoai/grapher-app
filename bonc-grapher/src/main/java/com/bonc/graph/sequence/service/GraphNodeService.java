@@ -258,7 +258,7 @@ public class GraphNodeService {
     /**
      * 根据articleId查询所有节点名称
      */
-    public List<String> getNodeNamesByArticleId(String articleId, String nodeName) {
-        return graphNodeMapper.getNodeNamesByArticleId(articleId,nodeName);
+    public List<String> getNodeNamesByArticleId(String articleId, String nodeName,Long nodeTemplateId) {
+        return graphNodeMapper.getNodeNamesByArticleId(articleId,nodeName,nodeTemplateId);
     }
 }

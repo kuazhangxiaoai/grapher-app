@@ -138,9 +138,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                     *,
                     ROW_NUMBER() OVER (PARTITION BY relation_hash ORDER BY create_time ASC) AS rn
                 FROM graph_relation
-                WHERE article_id = #{articleId} and relation_name like  '%'|| #{relationName}|| '%'
+                WHERE article_id = #{articleId} and relation_name like  '%'|| #{relationName}|| '%' and relation_template_id = #{relationTemplateId}
              ) t
         WHERE t.rn = 1
     </select>
-
 </mapper>

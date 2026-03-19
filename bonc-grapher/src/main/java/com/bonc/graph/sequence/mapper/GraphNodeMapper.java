@@ -46,7 +46,7 @@ public interface GraphNodeMapper {
     /**
      * 根据articleId和名称查询节点名称
      */
-    List<String> getNodeNamesByArticleId(@Param("articleId")String articleId, @Param("nodeName")String nodeName);
+    List<String> getNodeNamesByArticleId(@Param("articleId")String articleId, @Param("nodeName")String nodeName,@Param("nodeTemplateId") Long nodeTemplateId);
 
 
 }
