@@ -26,6 +26,7 @@ public class GraphArticleController {
     /** 查找图谱 */
     @GetMapping("/selectArticle")
     public Result selectArticle(@RequestParam(required = false) String condition, @RequestParam(required = false) String topicId){
+        log.info("查找图谱接口:/graph_api/v1/article/selectArticle");
         Result result = new Result();
         try {
             result.successResult(graphArticleService.selectArticle(condition,topicId));
@@ -39,6 +40,7 @@ public class GraphArticleController {
     /** 新增图谱 */
     @PostMapping("/addArticle")
     public Result addArticle(@ModelAttribute ArticleDto articleDto, @AuthenticationPrincipal PPTLoginUser loginUser){
+        log.info("新增图谱接口:/graph_api/v1/article/addArticle");
         Result result = new Result();
         try {
             GraphUser user = loginUser.getUser();
