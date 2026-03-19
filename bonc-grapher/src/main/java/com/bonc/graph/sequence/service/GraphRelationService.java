@@ -3,6 +3,7 @@ package com.bonc.graph.sequence.service;
 import com.bonc.graph.sequence.domain.GraphRelation;
 import com.bonc.graph.sequence.domain.GraphRelationProperty;
 import com.bonc.graph.sequence.dto.GraphSaveDTO;
+import com.bonc.graph.sequence.dto.SearchNodeOrRelationNameDTO;
 import com.bonc.graph.sequence.mapper.GraphRelationMapper;
 import com.bonc.graph.sequence.mapper.GraphRelationPropertyMapper;
 import com.bonc.graph.template.domain.GraphNodeTemplate;
@@ -267,7 +268,7 @@ public class GraphRelationService {
     /**
      * 根据articleId查询所有关系名称
      */
-    public Object getRelationNamesByArticleId(String articleId, String relationName,Long relationTemplateId) {
-        return graphRelationMapper.getRelationNamesByArticleId(articleId,relationName,relationTemplateId);
+    public Object getRelationNamesByArticleId(SearchNodeOrRelationNameDTO searchNodeOrRelationNameDTO) {
+        return graphRelationMapper.getRelationNamesByArticleId(searchNodeOrRelationNameDTO);
     }
 }

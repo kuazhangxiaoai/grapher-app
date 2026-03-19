@@ -130,7 +130,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE t.rn = 1
     </select>
 
-    <select id="getRelationNamesByArticleId" resultType="String">
+    <select id="getRelationNamesByArticleId" resultType="java.lang.String">
         SELECT
         t.relation_name
         FROM (
@@ -138,7 +138,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                     *,
                     ROW_NUMBER() OVER (PARTITION BY relation_hash ORDER BY create_time ASC) AS rn
                 FROM graph_relation
-                WHERE article_id = #{articleId} and relation_name like  '%'|| #{relationName}|| '%' and relation_template_id = #{relationTemplateId}
+                WHERE article_id = #{dto.articleId} and relation_name like  '%'|| #{dto.relationName}|| '%' and relation_template_id = #{dto.relationTemplateId}
              ) t
         WHERE t.rn = 1
     </select>

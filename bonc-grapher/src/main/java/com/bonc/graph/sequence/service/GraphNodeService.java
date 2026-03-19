@@ -3,6 +3,7 @@ package com.bonc.graph.sequence.service;
 import com.bonc.graph.sequence.domain.GraphNode;
 import com.bonc.graph.sequence.domain.GraphNodeProperty;
 import com.bonc.graph.sequence.dto.GraphSaveDTO;
+import com.bonc.graph.sequence.dto.SearchNodeOrRelationNameDTO;
 import com.bonc.graph.sequence.mapper.GraphNodeMapper;
 import com.bonc.graph.sequence.mapper.GraphNodePropertyMapper;
 import com.bonc.graph.template.domain.GraphNodeTemplate;
@@ -258,7 +259,7 @@ public class GraphNodeService {
     /**
      * 根据articleId查询所有节点名称
      */
-    public List<String> getNodeNamesByArticleId(String articleId, String nodeName,Long nodeTemplateId) {
-        return graphNodeMapper.getNodeNamesByArticleId(articleId,nodeName,nodeTemplateId);
+    public List<String> getNodeNamesByArticleId(SearchNodeOrRelationNameDTO searchNodeOrRelationNameDTO) {
+        return graphNodeMapper.getNodeNamesByArticleId(searchNodeOrRelationNameDTO);
     }
 }

@@ -1,6 +1,7 @@
 package com.bonc.graph.sequence.mapper;
 
 import com.bonc.graph.sequence.domain.GraphRelation;
+import com.bonc.graph.sequence.dto.SearchNodeOrRelationNameDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -46,5 +47,5 @@ public interface GraphRelationMapper {
     /**
      * 根据articleId和名称查询关系名称
      */
-    List<String> getRelationNamesByArticleId(@Param("articleId")String articleId, @Param("relationName")String relationName,@Param("relationTemplateId") Long relationTemplateId);
+    List<String> getRelationNamesByArticleId(@Param("dto") SearchNodeOrRelationNameDTO searchNodeOrRelationNameDTO);
 }

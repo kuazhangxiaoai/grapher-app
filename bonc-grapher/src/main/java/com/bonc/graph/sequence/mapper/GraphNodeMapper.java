@@ -1,6 +1,7 @@
 package com.bonc.graph.sequence.mapper;
 
 import com.bonc.graph.sequence.domain.GraphNode;
+import com.bonc.graph.sequence.dto.SearchNodeOrRelationNameDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -46,7 +47,7 @@ public interface GraphNodeMapper {
     /**
      * 根据articleId和名称查询节点名称
      */
-    List<String> getNodeNamesByArticleId(@Param("articleId")String articleId, @Param("nodeName")String nodeName,@Param("nodeTemplateId") Long nodeTemplateId);
+    List<String> getNodeNamesByArticleId(@Param("dto") SearchNodeOrRelationNameDTO searchNodeOrRelationNameDTO);
 
 
 }

@@ -122,7 +122,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE t.rn = 1
     </select>
 
-    <select id="getNodeNamesByArticleId" resultType="String">
+    <select id="getNodeNamesByArticleId" resultType="java.lang.String">
         SELECT
              t.node_name
         FROM (
@@ -130,7 +130,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                     *,
                     ROW_NUMBER() OVER (PARTITION BY node_hash ORDER BY create_time ASC) AS rn
                 FROM graph_node
-                WHERE article_id = #{articleId} and node_name like  '%'|| #{nodeName}|| '%' and node_template_id = #{nodeTemplateId}
+                WHERE article_id = #{dto.articleId} and node_name like  '%'|| #{dto.nodeName}|| '%' and node_template_id = #{dto.nodeTemplateId}
            ) t
         WHERE t.rn = 1
     </select>
