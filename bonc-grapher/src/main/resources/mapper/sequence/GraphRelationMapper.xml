@@ -132,7 +132,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="getRelationNamesByArticleId" resultType="java.lang.String">
         SELECT
-        t.relation_name
+        distinct t.relation_name
         FROM (
                 SELECT
                     *,

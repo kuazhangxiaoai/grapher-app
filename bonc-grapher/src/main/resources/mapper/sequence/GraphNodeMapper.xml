@@ -124,7 +124,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="getNodeNamesByArticleId" resultType="java.lang.String">
         SELECT
-             t.node_name
+             distinct t.node_name
         FROM (
                 SELECT
                     *,
