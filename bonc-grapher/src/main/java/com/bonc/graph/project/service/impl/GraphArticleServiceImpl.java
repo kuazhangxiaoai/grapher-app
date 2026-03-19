@@ -105,6 +105,10 @@ public class GraphArticleServiceImpl implements GraphArticleService {
                 // 获取文件后缀名
                 String suffix = getFileSuffix(originalFilename);
                 suffix = suffix.replace(".", "").toLowerCase();
+
+                if(!"txt".equals(suffix)&&!"pdf".equals(suffix)){
+                    throw new ValidationException("只能上传txt或者pdf文件,请重新选择");
+                }
                 // 生成新的唯一文件名
                 String newFileName = UUID.randomUUID().toString() + suffix;
                 // 拼接绝对路径
