@@ -160,6 +160,11 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
         //根据nodeTemplateId删除节点及属性
         nodePropertyMapper.deleteByNodeTemplateId(nodeTemplateId);
         nodeMapper.deleteByNodeTemplateId(nodeTemplateId);
+        //根据nodeTemplateId查询star或者end相同的关系list，进行删除TODO
+        List<Long> relationTemplateIds = relationTemplateMapper.selectRelationTemplateIdsByNodeTemplateId(nodeTemplateId);
+        for (Long relationTemplateId : relationTemplateIds) {
+            deleteRelationTemplate(relationTemplateId);
+        }
     }
 
     // 5. 本体设计-关系模版删除接口（逻辑删除）
@@ -167,7 +172,7 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
     public void deleteRelationTemplate(Long relationTemplateId) {
         relationTemplateMapper.updateDeleteFlag(relationTemplateId, "1");
         relationTemplatePropertyMapper.updateDeleteFlagByRelationTemplateId(relationTemplateId, "1");
-        //根据nodeTemplateId删除节点及属性
+        //根据relationTemplateId删除关系及属性
         relationPropertyMapper.deleteByRelationTemplateId(relationTemplateId);
         relationMapper.deleteByRelationTemplateId(relationTemplateId);
     }
@@ -353,11 +358,15 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
     private void checkRelationTemplateNameUnique(RelationTemplateSaveDTO dto) {
         String relationTemplateName = dto.getRelationTemplateName();
         Long relationTemplateId = dto.getRelationTemplateId();
+        Long startNodeTemplateId = dto.getStartNodeTemplateId();
+        Long endNodeTemplateId = dto.getEndNodeTemplateId();
         String topicId = dto.getTopicId();
 
         // 1. 校验普通模板（同专题）名称是否重复
         int topicTemplateCount = relationTemplateMapper.countTopicTemplateByName(
                 relationTemplateName,
+                startNodeTemplateId,
+                endNodeTemplateId,
                 topicId,
                 relationTemplateId
         );
@@ -369,6 +378,8 @@ public class TemplateDesignServiceImpl implements TemplateDesignService {
         if ("1".equals(dto.getIsLibraryFlag())) {
             int libraryTemplateCount = relationTemplateMapper.countLibraryTemplateByName(
                     relationTemplateName,
+                    startNodeTemplateId,
+                    endNodeTemplateId,
                     relationTemplateId
             );
             if (libraryTemplateCount > 0) {

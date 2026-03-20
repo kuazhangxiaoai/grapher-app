@@ -28,12 +28,24 @@ public interface GraphRelationTemplateMapper {
     // 某专题下关系模板名称唯一性校验
     int countTopicTemplateByName(
             @Param("relationTemplateName") String relationTemplateName,
+            @Param("startNodeTemplateId") Long startNodeTemplateId,
+            @Param("endNodeTemplateId") Long endNodeTemplateId,
             @Param("topicId") String topicId,
             @Param("relationTemplateId") Long relationTemplateId
     );
     // 组件库关系模板名称唯一性校验
     int countLibraryTemplateByName(
             @Param("relationTemplateName") String relationTemplateName,
+            @Param("startNodeTemplateId") Long startNodeTemplateId,
+            @Param("endNodeTemplateId") Long endNodeTemplateId,
             @Param("relationTemplateId") Long relationTemplateId
     );
+
+    /**
+     * 根据节点模版ID查询关联的关系模版ID列表
+     * @param nodeTemplateId 节点模版ID
+     * @return 关系模版ID列表
+     */
+    List<Long> selectRelationTemplateIdsByNodeTemplateId(@Param("nodeTemplateId") Long nodeTemplateId);
+
 }

@@ -90,6 +90,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="countTopicTemplateByName" resultType="int">
         select count(1) from graph_relation_template
         where relation_template_name = #{relationTemplateName}
+        and start_node_template_id = #{startNodeTemplateId}
+        and end_node_template_id = #{endNodeTemplateId}
         and topic_id = #{topicId}
         and is_library_flag = '0'
         and is_delete_flag = '0'
@@ -102,11 +104,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="countLibraryTemplateByName" resultType="int">
         select count(1) from graph_relation_template
         where relation_template_name = #{relationTemplateName}
+        and start_node_template_id = #{startNodeTemplateId}
+        and end_node_template_id = #{endNodeTemplateId}
         and is_library_flag = '1'
         and is_delete_flag = '0'
         <if test="relationTemplateId != null">
             and relation_template_id != #{relationTemplateId}
         </if>
+    </select>
+
+    <!-- 根据节点模版ID查询关联的关系模版ID列表 -->
+    <select id="selectRelationTemplateIdsByNodeTemplateId" resultType="java.lang.Long">
+        SELECT relation_template_id
+        FROM graph_relation_template
+        WHERE (start_node_template_id = #{nodeTemplateId} OR end_node_template_id = #{nodeTemplateId})
+          AND is_delete_flag = '0'
     </select>
 
 </mapper>
