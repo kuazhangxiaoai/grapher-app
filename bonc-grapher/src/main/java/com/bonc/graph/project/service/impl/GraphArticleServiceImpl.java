@@ -11,6 +11,7 @@ import com.bonc.graph.sequence.mapper.GraphSequenceMapper;
 import com.bonc.graph.sequence.service.GraphNodeService;
 import com.bonc.graph.sequence.service.GraphRelationService;
 import com.bonc.graph.sequence.service.GraphSequenceService;
+import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
@@ -228,19 +229,29 @@ public class GraphArticleServiceImpl implements GraphArticleService {
         PdfWriter writer = new PdfWriter(outputPath);
         PdfDocument pdf = new PdfDocument(writer);
         Document document = new Document(pdf);
-
-        // 解决中文乱码
-        URL resource = Thread.currentThread()
+        InputStream fontStream = Thread.currentThread()
                 .getContextClassLoader()
-                .getResource("fonts/STFANGSO.TTF");
+                .getResourceAsStream("fonts/STFANGSO.TTF");
 
-        if (resource == null) {
+        if (fontStream == null) {
             throw new RuntimeException("字体文件没找到！");
         }
 
-        String fontPath = resource.toURI().getPath();
 
-        PdfFont font = PdfFontFactory.createFont(fontPath, "Identity-H");
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = fontStream.read(buffer)) != -1) {
+            baos.write(buffer, 0, len);
+        }
+
+        byte[] fontBytes = baos.toByteArray();
+
+        PdfFont font = PdfFontFactory.createFont(
+                fontBytes,
+                PdfEncodings.IDENTITY_H
+        );
+
         document.setFont(font);
 
         // 读取 txt
