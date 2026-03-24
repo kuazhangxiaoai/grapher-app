@@ -33,4 +33,8 @@ public interface GraphRelationPropertyMapper {
      */
     int deleteByRelationTemplateId(@Param("relationTemplateId") Long relationTemplateId);
 
+    List<GraphRelationProperty> selectByRelationIds(@Param("relationIds") List<Long> relationIds);
+
+    int batchDeleteByRelationIds(@Param("relationIds") List<Long> relationIds);
+
 }

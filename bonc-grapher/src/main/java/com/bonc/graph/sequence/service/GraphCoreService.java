@@ -146,6 +146,7 @@ public class GraphCoreService {
         // 转换节点
         List<GraphResponseDTO.NodeResponseDTO> nodeDTOList = nodes.stream().map(node -> {
             GraphResponseDTO.NodeResponseDTO nodeDTO = new GraphResponseDTO.NodeResponseDTO();
+            nodeDTO.setNodeId(node.getNodeId());
             nodeDTO.setNodeHash(node.getNodeHash());
             nodeDTO.setNodeTemplateId(node.getNodeTemplateId());
             nodeDTO.setNodeTemplateName(node.getNodeTemplateName());
@@ -166,6 +167,7 @@ public class GraphCoreService {
         // 转换关系
         List<GraphResponseDTO.RelationResponseDTO> relationDTOList = relations.stream().map(relation -> {
             GraphResponseDTO.RelationResponseDTO relationDTO = new GraphResponseDTO.RelationResponseDTO();
+            relationDTO.setRelationId(relation.getRelationId());
             relationDTO.setRelationHash(relation.getRelationHash());
             relationDTO.setRelationTemplateId(relation.getRelationTemplateId());
             relationDTO.setRelationTemplateName(relation.getRelationTemplateName());

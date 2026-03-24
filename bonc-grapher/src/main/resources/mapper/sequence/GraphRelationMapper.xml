@@ -142,4 +142,69 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
              ) t
         WHERE t.rn = 1
     </select>
+
+    <select id="selectByLevelAndHash" resultMap="BaseResultMap">
+        SELECT * FROM graph_relation
+        WHERE 1=1
+        <choose>
+            <when test="level == 1">
+                AND relation_hash = #{relationHash}
+            </when>
+            <when test="level == 2">
+                AND field_id = #{levelId} AND relation_hash = #{relationHash}
+            </when>
+            <when test="level == 3">
+                AND topic_id = #{levelId} AND relation_hash = #{relationHash}
+            </when>
+            <when test="level == 4">
+                AND article_id = #{levelId} AND relation_hash = #{relationHash}
+            </when>
+            <when test="level == 5">
+                AND sequence_id = #{levelId} AND relation_hash = #{relationHash}
+            </when>
+        </choose>
+    </select>
+
+    <select id="selectByNodeHash" resultMap="BaseResultMap">
+        SELECT * FROM graph_relation
+        WHERE start_node_hash = #{nodeHash} OR end_node_hash = #{nodeHash}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="relationId">
+        INSERT INTO graph_relation (
+            relation_hash, relation_name, relation_type, relation_trigger,
+            start_node_hash, end_node_hash, create_time, update_time,
+            field_id, topic_id, article_id, sequence_id,
+            relation_template_name, relation_template_id
+        ) VALUES (
+                     #{relationHash}, #{relationName}, #{relationType}, #{relationTrigger},
+                     #{startNodeHash}, #{endNodeHash}, NOW(), NOW(),
+                     #{fieldId}, #{topicId}, #{articleId}, #{sequenceId},
+                     #{relationTemplateName}, #{relationTemplateId}
+                 )
+    </insert>
+
+    <update id="batchUpdate">
+        <foreach collection="relations" item="item" separator=";">
+            UPDATE graph_relation
+            SET relation_name = #{item.relationName},
+            relation_type = #{item.relationType},
+            relation_trigger = #{item.relationTrigger},
+            start_node_hash = #{item.startNodeHash},
+            end_node_hash = #{item.endNodeHash},
+            update_time = NOW(),
+            relation_template_name = #{item.relationTemplateName},
+            relation_template_id = #{item.relationTemplateId}
+            WHERE relation_id = #{item.relationId}
+        </foreach>
+    </update>
+
+    <delete id="batchDelete">
+        DELETE FROM graph_relation WHERE relation_id IN
+        <foreach collection="relationIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+
 </mapper>

@@ -48,4 +48,17 @@ public interface GraphRelationMapper {
      * 根据articleId和名称查询关系名称
      */
     List<String> getRelationNamesByArticleId(@Param("dto") SearchNodeOrRelationNameDTO searchNodeOrRelationNameDTO);
+
+    List<GraphRelation> selectByLevelAndHash(@Param("level") Integer level,
+                                             @Param("levelId") String levelId,
+                                             @Param("relationHash") String relationHash);
+
+    List<GraphRelation> selectByNodeHash(@Param("nodeHash") String nodeHash);
+
+    int insert(GraphRelation graphRelation);
+
+    int batchUpdate(@Param("relations") List<GraphRelation> relations);
+
+    int batchDelete(@Param("relationIds") List<Long> relationIds);
+
 }

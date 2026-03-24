@@ -14,5 +14,5 @@ public class GraphNodeProperty {
     private String propertyKey;
     private String propertyValue;
     private LocalDateTime createTime;
-    private Long updateTime;
+    private LocalDateTime updateTime;
 }

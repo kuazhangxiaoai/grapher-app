@@ -1,10 +1,7 @@
 package com.bonc.graph.sequence.controller;
 
 import com.bonc.common.utils.StringUtils;
-import com.bonc.graph.sequence.dto.SearchNodeOrRelationNameDTO;
-import com.bonc.graph.sequence.dto.GraphResponseDTO;
-import com.bonc.graph.sequence.dto.GraphSaveDTO;
-import com.bonc.graph.sequence.dto.GraphSequenceDTO;
+import com.bonc.graph.sequence.dto.*;
 import com.bonc.graph.sequence.service.GraphCoreService;
 import com.bonc.graph.sequence.service.GraphNodeService;
 import com.bonc.graph.sequence.service.GraphRelationService;
@@ -197,6 +194,84 @@ public class GraphController {
         Result result = new Result();
         try {
             result.successResult(graphRelationService.getRelationNamesByArticleId(searchNodeOrRelationNameDTO));
+        }catch (Exception e){
+            result.failResult(e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    /**
+     * 10. 图谱构建-节点保存提交接口
+     * @param saveDTO 保存参数
+     * @return 成功提示
+     */
+    @PostMapping("/saveNode")
+    public Result saveNode(@RequestBody NodeSaveDTO saveDTO) {
+        log.info("图谱构建-节点保存提交接口:/graph_api/v1/sequence/saveNode");
+        log.info("saveDTO:"+ saveDTO.toString());
+        Result result = new Result();
+        try {
+            graphNodeService.saveNode(saveDTO);
+            result.successResult();
+        }catch (Exception e){
+            result.failResult(e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+
+    /**
+     * 11. 图谱构建-节点删除接口
+     * @param deleteDto
+     * @return 成功提示
+     */
+    @PostMapping("/deleteNode")
+    public Result deleteNode(@RequestBody NodeDeleteDTO deleteDto) {
+        log.info("图谱构建-节点删除接口:/graph_api/v1/sequence/deleteNode");
+        Result result = new Result();
+        try {
+            graphNodeService.deleteNode(deleteDto);
+            result.successResult();
+        }catch (Exception e){
+            result.failResult(e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    /**
+     * 12. 图谱构建-关系保存接口
+     * @param dto
+     * @return 成功提示
+     */
+    @PostMapping("/saveRelation")
+    public Result saveRelation(@RequestBody RelationSaveDTO dto) {
+        log.info("图谱构建-关系保存接口:/graph_api/v1/sequence/saveRelation");
+        Result result = new Result();
+        try {
+            graphRelationService.saveRelation(dto);
+            result.successResult();
+        }catch (Exception e){
+            result.failResult(e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    /**
+     * 13. 图谱构建-关系删除接口
+     * @param dto
+     * @return 成功提示
+     */
+    @PostMapping("/deleteRelation")
+    public Result deleteRelation(@RequestBody RelationDeleteDTO dto) {
+        log.info("图谱构建-关系删除接口:/graph_api/v1/sequence/deleteRelation");
+        Result result = new Result();
+        try {
+            graphRelationService.deleteRelation(dto);
+            result.successResult();
         }catch (Exception e){
             result.failResult(e.getMessage());
             e.printStackTrace();

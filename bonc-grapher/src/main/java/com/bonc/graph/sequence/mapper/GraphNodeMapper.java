@@ -50,4 +50,15 @@ public interface GraphNodeMapper {
     List<String> getNodeNamesByArticleId(@Param("dto") SearchNodeOrRelationNameDTO searchNodeOrRelationNameDTO);
 
 
+    List<GraphNode> selectByLevelAndHash(@Param("level") Integer level,
+                                         @Param("levelId") String levelId,
+                                         @Param("nodeHash") String nodeHash);
+
+    int insert(GraphNode graphNode);
+
+    int batchUpdate(@Param("nodes") List<GraphNode> nodes);
+
+    int batchDelete(@Param("nodeIds") List<Long> nodeIds);
+
+
 }

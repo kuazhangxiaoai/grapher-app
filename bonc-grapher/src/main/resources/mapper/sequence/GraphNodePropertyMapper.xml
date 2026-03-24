@@ -46,4 +46,28 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE node_id IN (SELECT node_id FROM graph_node WHERE node_template_id = #{nodeTemplateId})
     </delete>
 
+    <select id="selectByNodeIds" resultMap="BaseResultMap">
+        SELECT * FROM graph_node_property
+        WHERE node_id IN
+        <foreach collection="nodeIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+<!--    <insert id="batchInsert">-->
+<!--        INSERT INTO graph_node_property (-->
+<!--        node_id, property_key, property_value, create_time, update_time-->
+<!--        ) VALUES-->
+<!--        <foreach collection="properties" item="item" separator=",">-->
+<!--            (#{item.nodeId}, #{item.propertyKey}, #{item.propertyValue}, NOW(), NOW())-->
+<!--        </foreach>-->
+<!--    </insert>-->
+
+    <delete id="batchDeleteByNodeIds">
+        DELETE FROM graph_node_property WHERE node_id IN
+        <foreach collection="nodeIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
 </mapper>

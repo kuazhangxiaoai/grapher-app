@@ -19,6 +19,7 @@ public class GraphResponseDTO {
      */
     @Data
     public static class NodeResponseDTO {
+        private Long nodeId;
         private String nodeHash;
         private Long nodeTemplateId;//节点模版ID
         private String nodeTemplateName;//节点模版名称
@@ -33,6 +34,7 @@ public class GraphResponseDTO {
      */
     @Data
     public static class RelationResponseDTO {
+        private Long relationId;
         private String relationHash;
         private Long relationTemplateId;//关系模版ID
         private String relationTemplateName;//关系模版名称

@@ -134,4 +134,59 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
            ) t
         WHERE t.rn = 1
     </select>
+
+    <select id="selectByLevelAndHash" resultMap="BaseResultMap">
+        SELECT * FROM graph_node
+        WHERE 1=1
+        <choose>
+            <when test="level == 1">
+                AND node_hash = #{nodeHash}
+            </when>
+            <when test="level == 2">
+                AND field_id = #{levelId} AND node_hash = #{nodeHash}
+            </when>
+            <when test="level == 3">
+                AND topic_id = #{levelId} AND node_hash = #{nodeHash}
+            </when>
+            <when test="level == 4">
+                AND article_id = #{levelId} AND node_hash = #{nodeHash}
+            </when>
+            <when test="level == 5">
+                AND sequence_id = #{levelId} AND node_hash = #{nodeHash}
+            </when>
+        </choose>
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="nodeId">
+        INSERT INTO graph_node (
+            node_hash, node_name, node_description, node_color,
+            create_time, update_time, field_id, topic_id,
+            article_id, sequence_id, node_template_name, node_template_id
+        ) VALUES (
+                     #{nodeHash}, #{nodeName}, #{nodeDescription}, #{nodeColor},
+                     NOW(), NOW(), #{fieldId}, #{topicId},
+                     #{articleId}, #{sequenceId}, #{nodeTemplateName}, #{nodeTemplateId}
+                 )
+    </insert>
+
+    <update id="batchUpdate">
+        <foreach collection="nodes" item="item" separator=";">
+            UPDATE graph_node
+            SET node_name = #{item.nodeName},
+            node_description = #{item.nodeDescription},
+            node_color = #{item.nodeColor},
+            update_time = NOW(),
+            node_template_name = #{item.nodeTemplateName},
+            node_template_id = #{item.nodeTemplateId}
+            WHERE node_id = #{item.nodeId}
+        </foreach>
+    </update>
+
+    <delete id="batchDelete">
+        DELETE FROM graph_node WHERE node_id IN
+        <foreach collection="nodeIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
 </mapper>
