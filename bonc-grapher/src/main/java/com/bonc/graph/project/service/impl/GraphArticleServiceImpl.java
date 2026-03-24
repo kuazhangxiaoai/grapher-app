@@ -111,7 +111,7 @@ public class GraphArticleServiceImpl implements GraphArticleService {
                     throw new ValidationException("只能上传txt或者pdf文件,请重新选择");
                 }
                 // 生成新的唯一文件名
-                String newFileName = UUID.randomUUID().toString() + suffix;
+                String newFileName = UUID.randomUUID().toString() +"."+ suffix;
                 // 拼接绝对路径
                 String filePath = FILE_SAVE + File.separator + newFileName;
 
