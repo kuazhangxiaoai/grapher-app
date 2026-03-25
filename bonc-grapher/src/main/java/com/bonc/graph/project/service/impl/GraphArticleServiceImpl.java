@@ -187,10 +187,8 @@ public class GraphArticleServiceImpl implements GraphArticleService {
         if(article==null){
             throw new RuntimeException("该图谱不存在");
         }
-        //自文本创建——删除
-        if("0".equals(article.getCreateMethod())){
-            //根据articleId查找所有的sequenceId
-            List<GraphSequence> graphSequences = graphSequenceMapper.selectByArticleId(article.getArticleId());
+        //自文本创建——删除 根据articleId查找所有的sequenceId
+        List<GraphSequence> graphSequences  = graphSequenceMapper.selectByArticleId(article.getArticleId());
             if(graphSequences.size()>0){
                 for(GraphSequence graphSequence:graphSequences){
                     //删除段落
@@ -201,7 +199,8 @@ public class GraphArticleServiceImpl implements GraphArticleService {
                     graphRelationService.deleteRelationsBySequenceId(graphSequence.getSequenceId());
                 }
             }
-
+            //自文本创建——删除文件
+        if("0".equals(article.getCreateMethod())){
             Article fileArticle = graphArticleMapper.selectByArticleId(article.getArticleId());
             if(fileArticle != null && fileArticle.getFileName()!=null&&!"".equals(fileArticle.getFileName())){
                 // 获取文件存储的完整路径（和上传时的路径保持一致）
@@ -221,7 +220,8 @@ public class GraphArticleServiceImpl implements GraphArticleService {
                     }
                 }
             }
-        }else if("2".equals(article.getCreateMethod())){ //任意创建——删除
+        }
+        //任意创建时 删除节点和关系以及属性
             // 1. 获取当前文章所有节点ID并删除节点及属性
             List<Long> nodeIds = graphNodeMapper.selectByArticleId(article.getArticleId());
             if (nodeIds != null && !nodeIds.isEmpty()) {
@@ -240,7 +240,6 @@ public class GraphArticleServiceImpl implements GraphArticleService {
                 graphRelationMapper.batchDelete(relationIds);
             }
 
-        }
         return graphArticleMapper.deleteArticle(article.getArticleId());
     }
 
