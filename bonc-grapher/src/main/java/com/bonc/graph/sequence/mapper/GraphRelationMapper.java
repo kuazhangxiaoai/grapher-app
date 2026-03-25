@@ -61,4 +61,8 @@ public interface GraphRelationMapper {
 
     int batchDelete(@Param("relationIds") List<Long> relationIds);
 
+    /**
+     * 根据articleId查询所有关系ID
+     */
+    List<Long> selectByArticleId(String articleId);
 }

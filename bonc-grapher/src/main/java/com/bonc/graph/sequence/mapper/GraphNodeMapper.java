@@ -60,5 +60,8 @@ public interface GraphNodeMapper {
 
     int batchDelete(@Param("nodeIds") List<Long> nodeIds);
 
-
+    /**
+     * 根据articleId查询所有节点ID
+     */
+    List<Long> selectByArticleId(String articleId);
 }

@@ -189,4 +189,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </foreach>
     </delete>
 
+    <select id="selectByArticleId" resultType="java.lang.Long">
+        SELECT node_id FROM graph_node WHERE article_id = #{articleId}
+    </select>
+
 </mapper>

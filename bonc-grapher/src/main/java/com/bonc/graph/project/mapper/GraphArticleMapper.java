@@ -38,6 +38,8 @@ public interface GraphArticleMapper {
       */
      Article selectByArticleId(@Param("articleId") String articleId);
 
-
+     /**
+      * 查询名称—校验专题下是否有相同名称的图谱
+      */
      Article selectByArticleName(@Param("articleName") String oldArticleName, @Param("topicId") String oldTopicId);
 }
